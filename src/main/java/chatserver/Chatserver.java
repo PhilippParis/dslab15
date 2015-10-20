@@ -12,10 +12,9 @@ import java.util.logging.Logger;
 import cli.Command;
 import cli.Shell;
 import domain.Dispatcher;
-import service.ChannelService;
-import service.IChannelService;
-import service.IUserService;
-import service.UserService;
+import executors.IMessageExecutorFactory;
+import executors.ServerMessageExecutorFactory;
+import service.*;
 import util.Config;
 
 public class Chatserver implements IChatserverCli, Runnable {
@@ -34,6 +33,8 @@ public class Chatserver implements IChatserverCli, Runnable {
 	private IUserService userService;
 	private IChannelService channelService;
 	private Dispatcher dispatcher;
+	private IMessageService messageService;
+	private IMessageExecutorFactory messageExecutorFactory;
 
 	// connection
 	private ServerSocket serverSocket;
@@ -59,6 +60,8 @@ public class Chatserver implements IChatserverCli, Runnable {
 		// setup services
 		userService = new UserService();
 		channelService = new ChannelService(executorService);
+		messageExecutorFactory = new ServerMessageExecutorFactory(channelService, userService);
+		messageService = new MessageService(messageExecutorFactory, executorService);
 
 		// setup shell
 		shell = new Shell(componentName, userRequestStream, userResponseStream);
@@ -76,7 +79,7 @@ public class Chatserver implements IChatserverCli, Runnable {
 		}
 
 		// create dispatcher
-		dispatcher = new Dispatcher(channelService, serverSocket);
+		dispatcher = new Dispatcher(channelService, messageService, serverSocket);
 	}
 
 	@Override

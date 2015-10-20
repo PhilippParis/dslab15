@@ -8,7 +8,22 @@ import domain.IMessage;
 public interface IMessageService {
 
     /**
-     * @param message
+     * executes the message
+     * @param message message to execute
      */
     void execute(IMessage message);
+
+    /**
+     * serializes and encodes the message to a byte array for sending
+     * @param message message to serialize/encode
+     * @return serialized message
+     */
+    byte[] encode(IMessage message);
+
+    /**
+     * decodes the data and returns the message object
+     * @param data data sent over the network
+     * @return the message object
+     */
+    IMessage decode(byte[] data);
 }

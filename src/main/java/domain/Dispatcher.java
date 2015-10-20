@@ -1,6 +1,7 @@
 package domain;
 
 import service.IChannelService;
+import service.IMessageService;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,10 +14,12 @@ import java.util.logging.Logger;
 public class Dispatcher implements Runnable {
     private final static Logger LOGGER = Logger.getLogger(Dispatcher.class.getName());
     private ServerSocket serverSocket;
+    private IMessageService messageService;
     private IChannelService channelService;
 
-    public Dispatcher(IChannelService channelService, ServerSocket serverSocket) {
+    public Dispatcher(IChannelService channelService, IMessageService messageService, ServerSocket serverSocket) {
         this.channelService = channelService;
+        this.messageService = messageService;
         this.serverSocket = serverSocket;
     }
 
@@ -33,6 +36,6 @@ public class Dispatcher implements Runnable {
     }
 
     IChannel createTCPChannel(Socket socket) {
-        return new TCPChannel(socket);
+        return new TCPChannel(socket, messageService);
     }
 }

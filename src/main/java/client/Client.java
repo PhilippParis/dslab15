@@ -13,8 +13,12 @@ import cli.Command;
 import cli.Shell;
 import domain.IChannel;
 import domain.TCPChannel;
+import executors.ClientMessageExecutorFactory;
+import executors.IMessageExecutorFactory;
 import service.ChannelService;
 import service.IChannelService;
+import service.IMessageService;
+import service.MessageService;
 import util.Config;
 
 public class Client implements IClientCli, Runnable {
@@ -34,6 +38,8 @@ public class Client implements IClientCli, Runnable {
 
 	// services
 	private IChannelService channelService;
+	private IMessageService messageService;
+	private IMessageExecutorFactory messageExecutorFactory;
 
 	/**
 	 * @param componentName
@@ -54,6 +60,8 @@ public class Client implements IClientCli, Runnable {
 
 		// setup services
 		channelService = new ChannelService(executorService);
+		messageExecutorFactory = new ClientMessageExecutorFactory(userResponseStream);
+		messageService = new MessageService(messageExecutorFactory, executorService);
 
 		// setup shell
 		shell = new Shell(componentName, userRequestStream, userResponseStream);
@@ -72,7 +80,7 @@ public class Client implements IClientCli, Runnable {
 	private void connectToServer(String host, int port) {
 		try {
 			Socket socket = new Socket(host, port);
-			serverChannel = new TCPChannel(socket);
+			serverChannel = new TCPChannel(socket, messageService);
 			channelService.addChannel(serverChannel);
 		} catch (IOException e) {
 			LOGGER.log(Level.INFO, "could not connect to server");
