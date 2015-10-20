@@ -3,7 +3,7 @@ package domain;
 /**
  * Channel Interface
  */
-public interface IChannel {
+public interface IChannel extends Runnable {
 
     /**
      * sends a message via this channel

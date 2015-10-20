@@ -4,16 +4,24 @@ import domain.IChannel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Implementation of the channel service interface
  */
 public class ChannelService implements IChannelService {
     private ArrayList<IChannel> channels = new ArrayList<>();
+    private ExecutorService executorService;
+
+    public ChannelService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     @Override
     public void addChannel(IChannel channel) {
         channels.add(channel);
+        // start the execution of the channel -> listen for incomming messages
+        executorService.execute(channel);
     }
 
     @Override

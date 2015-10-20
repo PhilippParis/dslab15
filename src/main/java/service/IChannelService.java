@@ -11,7 +11,7 @@ import java.util.Collection;
 public interface IChannelService {
 
     /**
-     * adds a channel
+     * adds the channel and starts the execution an a thread
      * @param channel   channel to add
      */
     void addChannel(IChannel channel);
