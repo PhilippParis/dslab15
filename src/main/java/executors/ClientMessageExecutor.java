@@ -18,4 +18,29 @@ public class ClientMessageExecutor implements IMessageExecutor {
     public void executeLoginMessage(IMessage message) {
 
     }
+
+    @Override
+    public void executeLogoutMessage(IMessage message) {
+
+    }
+
+    @Override
+    public void executeSendMessage(IMessage message) {
+
+    }
+
+    @Override
+    public void executeRegisterMessage(IMessage message) {
+
+    }
+
+    @Override
+    public void executeLookupMessage(IMessage message) {
+
+    }
+
+    @Override
+    public void executeListMessage(IMessage message) {
+
+    }
 }

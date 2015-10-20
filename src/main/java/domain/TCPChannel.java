@@ -41,8 +41,7 @@ public class TCPChannel implements IChannel {
                 socket.getInputStream().read(buffer);
                 messageService.execute(messageService.decode(buffer));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException | ClassNotFoundException e) {
         }
         LOGGER.log(Level.INFO, "channel stopped");
     }

@@ -12,7 +12,9 @@ import java.util.logging.Logger;
 import cli.Command;
 import cli.Shell;
 import domain.IChannel;
+import domain.IMessage;
 import domain.TCPChannel;
+import domain.messages.*;
 import executors.ClientMessageExecutorFactory;
 import executors.IMessageExecutorFactory;
 import service.ChannelService;
@@ -99,28 +101,32 @@ public class Client implements IClientCli, Runnable {
 	@Command
 	@Override
 	public String login(String username, String password) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		IMessage msg = new LoginMessage(username, password);
+		serverChannel.send(msg);
+		return null; // TODO
 	}
 
 	@Command
 	@Override
 	public String logout() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		IMessage msg = new LogoutMessage();
+		serverChannel.send(msg);
+		return null; // TODO
 	}
 
 	@Command
 	@Override
 	public String send(String message) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		IMessage msg = new SendMessage(message);
+		serverChannel.send(msg);
+		return null; // TODO
 	}
 
 	@Command
 	@Override
 	public String list() throws IOException {
-		// TODO Auto-generated method stub
+		IMessage msg = new ListMessage();
+		// TODO send over tcp
 		return null;
 	}
 
@@ -134,15 +140,17 @@ public class Client implements IClientCli, Runnable {
 	@Command
 	@Override
 	public String lookup(String username) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		IMessage msg = new LookupMessage(username);
+		serverChannel.send(msg);
+		return null; // TODO
 	}
 
 	@Command
 	@Override
 	public String register(String privateAddress) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		IMessage msg = new RegisterMessage(privateAddress);
+		serverChannel.send(msg);
+		return null; // TODO
 	}
 
 	@Command
