@@ -5,11 +5,13 @@ import service.IChannelService;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 /**
  * Created by phili on 10/20/15.
  */
 public class Dispatcher implements Runnable {
+    private final static Logger LOGGER = Logger.getLogger(Dispatcher.class.getName());
     private ServerSocket serverSocket;
     private IChannelService channelService;
 
@@ -31,6 +33,6 @@ public class Dispatcher implements Runnable {
     }
 
     IChannel createTCPChannel(Socket socket) {
-        return null; // TODO
+        return new TCPChannel(socket);
     }
 }

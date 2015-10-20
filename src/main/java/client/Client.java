@@ -24,8 +24,6 @@ public class Client implements IClientCli, Runnable {
 	private Config config;
 	private InputStream userRequestStream;
 	private PrintStream userResponseStream;
-
-	// cli
 	private Shell shell;
 
 	// threading
