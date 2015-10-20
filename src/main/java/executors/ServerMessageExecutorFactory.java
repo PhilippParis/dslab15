@@ -1,5 +1,7 @@
 package executors;
 
+import domain.IChannel;
+import domain.User;
 import service.IChannelService;
 import service.IUserService;
 
@@ -16,7 +18,9 @@ public class ServerMessageExecutorFactory implements IMessageExecutorFactory {
     }
 
     @Override
-    public IMessageExecutor create() {
-        return new ServerMessageExecutor(channelService, userService);
+    public IMessageExecutor create(IChannel channel, User user) {
+        ServerMessageExecutor executor = new ServerMessageExecutor(channelService, userService);
+        executor.setSenderInfo(channel, user);
+        return executor;
     }
 }

@@ -1,9 +1,12 @@
 package executors;
 
+import domain.IChannel;
 import domain.IMessage;
+import domain.User;
 import service.ChannelService;
 import service.IChannelService;
 import service.IUserService;
+import service.UserService;
 
 import java.util.logging.Logger;
 
@@ -14,10 +17,18 @@ public class ServerMessageExecutor implements IMessageExecutor {
     private final static Logger LOGGER = Logger.getLogger(ServerMessageExecutor.class.getName());
     private IChannelService channelService;
     private IUserService userService;
+    private IChannel channel;
+    private User user;
 
     public ServerMessageExecutor(IChannelService channelService, IUserService userService) {
         this.channelService = channelService;
         this.userService = userService;
+    }
+
+    @Override
+    public void setSenderInfo(IChannel channel, User user) {
+        this.channel = channel;
+        this.user = user;
     }
 
     @Override

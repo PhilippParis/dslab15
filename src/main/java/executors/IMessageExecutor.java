@@ -1,11 +1,15 @@
 package executors;
 
+import domain.IChannel;
 import domain.IMessage;
+import domain.User;
 
 /**
  * Created by phili on 10/20/15.
  */
 public interface IMessageExecutor {
+
+    void setSenderInfo(IChannel channel, User user);
 
     void executeLoginMessage(IMessage message);
 
