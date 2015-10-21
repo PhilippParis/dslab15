@@ -1,8 +1,5 @@
 package executors;
 
-import domain.IChannel;
-import domain.IMessage;
-import domain.User;
 import domain.messages.*;
 import domain.responses.*;
 
@@ -52,6 +49,10 @@ public abstract class IMessageExecutor {
     }
 
     public void executeLookupResponse(LookupResponse message) {
+        // ignore message
+    }
+
+    public void executeListResponse(ListResponse message) {
         // ignore message
     }
 }

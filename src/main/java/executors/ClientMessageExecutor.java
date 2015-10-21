@@ -57,4 +57,13 @@ public class ClientMessageExecutor extends IMessageExecutor {
     public void executeLookupResponse(LookupResponse message) {
         LOGGER.info("message received: " + message.toString());
     }
+
+    @Override
+    public void executeListResponse(ListResponse message) {
+        LOGGER.info("message received: " + message.toString());
+        userResponseStream.println("Online users:");
+        for (String user : message.getOnlineUsers()) {
+            userResponseStream.println("* " + user);
+        }
+    }
 }

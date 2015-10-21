@@ -3,7 +3,10 @@ package chatserver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -12,6 +15,8 @@ import java.util.logging.Logger;
 import cli.Command;
 import cli.Shell;
 import domain.Dispatcher;
+import domain.IChannel;
+import domain.UDPChannel;
 import executors.IMessageExecutorFactory;
 import executors.ServerMessageExecutorFactory;
 import service.*;
@@ -67,10 +72,11 @@ public class Chatserver implements IChatserverCli, Runnable {
 		shell = new Shell(componentName, userRequestStream, userResponseStream);
 		shell.register(this);
 
-		startTCPServer(config.getInt("tcp.port"));
+		setupTCPServer(config.getInt("tcp.port"));
+		setupUDP(config.getInt("udp.port"));
 	}
 
-	public void startTCPServer(int port) {
+	public void setupTCPServer(int port) {
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
@@ -80,6 +86,17 @@ public class Chatserver implements IChatserverCli, Runnable {
 
 		// create dispatcher
 		dispatcher = new Dispatcher(channelService, messageService, serverSocket);
+	}
+
+	private void setupUDP(int port) {
+		try {
+			DatagramSocket socket = new DatagramSocket(port);
+			IChannel udpChannel = new UDPChannel(messageService, socket);
+			channelService.addChannel(udpChannel);
+		} catch (SocketException e) {
+			LOGGER.log(Level.INFO, "setting up udp socket failed");
+			e.printStackTrace();
+		}
 	}
 
 	@Override

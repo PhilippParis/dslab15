@@ -45,7 +45,7 @@ public class TCPChannel implements IChannel {
 
     @Override
     public void run() {
-        LOGGER.log(Level.INFO, "channel running");
+        LOGGER.log(Level.INFO, "TCP channel started");
         try {
             while(true) {
                 byte[] buffer = new byte[1024];
@@ -54,6 +54,6 @@ public class TCPChannel implements IChannel {
             }
         } catch (IOException | ClassNotFoundException e) {
         }
-        LOGGER.log(Level.INFO, "channel stopped");
+        LOGGER.log(Level.INFO, "TCP channel stopped");
     }
 }

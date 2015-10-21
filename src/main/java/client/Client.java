@@ -3,7 +3,7 @@ package client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.Socket;
+import java.net.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -14,6 +14,7 @@ import cli.Shell;
 import domain.IChannel;
 import domain.IMessage;
 import domain.TCPChannel;
+import domain.UDPChannel;
 import domain.messages.*;
 import executors.ClientMessageExecutorFactory;
 import executors.IMessageExecutorFactory;
@@ -37,6 +38,8 @@ public class Client implements IClientCli, Runnable {
 
 	// connection
 	private IChannel serverChannel;
+	private IChannel udpChannel;
+	private SocketAddress serverUDPAddress;
 
 	// services
 	private IChannelService channelService;
@@ -76,17 +79,32 @@ public class Client implements IClientCli, Runnable {
 		executorService.execute(shell);
 
 		// connect to server
-		connectToServer(config.getString("chatserver.host"), config.getInt("chatserver.tcp.port"));
+		setupTCP(config.getString("chatserver.host"), config.getInt("chatserver.tcp.port"));
+		setupUDP(config.getString("chatserver.host"), config.getInt("chatserver.udp.port"));
 	}
 
-	private void connectToServer(String host, int port) {
+	private void setupTCP(String host, int port) {
 		try {
 			Socket socket = new Socket(host, port);
 			serverChannel = new TCPChannel(socket, messageService);
 			channelService.addChannel(serverChannel);
+
 		} catch (IOException e) {
 			LOGGER.log(Level.INFO, "could not connect to server");
 			userResponseStream.println("could not connect to server");
+			shutdown();
+		}
+	}
+
+	private void setupUDP(String host, int port) {
+		try {
+			DatagramSocket socket = new DatagramSocket();
+			serverUDPAddress = new InetSocketAddress(host, port);
+			udpChannel = new UDPChannel(messageService, socket);
+			channelService.addChannel(udpChannel);
+		} catch (SocketException e) {
+			LOGGER.log(Level.INFO, "setting up udp socket failed");
+			userResponseStream.println("setting up udp socket failed");
 			shutdown();
 		}
 	}
@@ -125,8 +143,9 @@ public class Client implements IClientCli, Runnable {
 	@Command
 	@Override
 	public String list() throws IOException {
-		IMessage msg = new ListMessage();
-		// TODO send over tcp
+		UDPMessage msg = new ListMessage();
+		msg.setSocketAddress(serverUDPAddress);
+		udpChannel.send(msg);
 		return null;
 	}
 

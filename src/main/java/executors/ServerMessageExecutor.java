@@ -8,6 +8,7 @@ import service.IChannelService;
 import service.IUserService;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -32,22 +33,25 @@ public class ServerMessageExecutor extends IMessageExecutor {
         // create response
         LoginResponse response = new LoginResponse();
 
-        if (channel.user() != null && channel.user().isLoggedIn()) {
+        // get user
+        User user = userService.getUser(message.getUsername());
+
+        if (user != null && user.isLoggedIn()) {
             // user already logged in
             response.setSuccessful(false);
             response.setMessage("user '" + message.getUsername() + "' already logged in");
         } else {
-            if (channel.user() == null) {
-                // create user
-                User user = new User(message.getUsername(), channel);
-                userService.addUser(user);
-                channel.setUser(user);
+            if (user == null) {
+                user = new User(message.getUsername(), channel);
             }
 
             // authenticate user
-            if (userService.authenticate(channel.user(), message.getPassword())) {
+            if (userService.authenticate(user, message.getPassword())) {
                 // successfully logged in
-                channel.user().setLoggedIn(true);
+                user.setLoggedIn(true);
+                userService.addUser(user);
+                channel.setUser(user);
+
                 response.setSuccessful(true);
                 response.setMessage("Successfully logged in");
             } else {
@@ -167,5 +171,19 @@ public class ServerMessageExecutor extends IMessageExecutor {
     public void executeListMessage(ListMessage message) {
         LOGGER.info("message received: " + message.toString());
 
+        // list online users
+        ArrayList<String> users = new ArrayList<>();
+
+        for (User user : userService.getAllUsers()) {
+            if (user.isLoggedIn()) {
+                users.add(user.username());
+            }
+        }
+
+        // create response
+        ListResponse response = new ListResponse();
+        response.setSocketAddress(message.getSocketAddress());
+        response.setOnlineUsers(users);
+        channel.send(response);
     }
 }
