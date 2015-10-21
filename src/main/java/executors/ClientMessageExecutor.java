@@ -5,6 +5,7 @@ import domain.IMessage;
 import domain.User;
 import domain.messages.*;
 import domain.responses.LoginResponse;
+import domain.responses.LogoutResponse;
 
 import java.io.PrintStream;
 import java.util.logging.Logger;
@@ -24,6 +25,12 @@ public class ClientMessageExecutor extends IMessageExecutor {
 
     @Override
     public void executeLoginResponse(LoginResponse message) {
+        LOGGER.info("message received: " + message.toString());
+        userResponseStream.println(message.getMessage());
+    }
+
+    @Override
+    public void executeLogoutResponse(LogoutResponse message) {
         LOGGER.info("message received: " + message.toString());
         userResponseStream.println(message.getMessage());
     }

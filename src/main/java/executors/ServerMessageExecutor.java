@@ -1,14 +1,12 @@
 package executors;
 
 import domain.IChannel;
-import domain.IMessage;
 import domain.User;
 import domain.messages.*;
 import domain.responses.LoginResponse;
-import service.ChannelService;
+import domain.responses.LogoutResponse;
 import service.IChannelService;
 import service.IUserService;
-import service.UserService;
 
 import java.util.logging.Logger;
 
@@ -36,7 +34,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
 
         if (userService.getUser(message.getUsername()) != null) {
             // user already logged in
-            response.setSuccessfull(false);
+            response.setSuccessful(false);
             response.setMessage("user '" + message.getUsername() + "' already logged in");
         } else {
             // create user
@@ -47,11 +45,11 @@ public class ServerMessageExecutor extends IMessageExecutor {
                 userService.addUser(user);
                 channel.setUser(user);
 
-                response.setSuccessfull(true);
+                response.setSuccessful(true);
                 response.setMessage("Successfully logged in");
             } else {
                 // wrong username / password
-                response.setSuccessfull(false);
+                response.setSuccessful(false);
                 response.setMessage("Wrong username or password");
             }
         }
@@ -64,6 +62,23 @@ public class ServerMessageExecutor extends IMessageExecutor {
     public void executeLogoutMessage(LogoutMessage message) {
         LOGGER.info("message received: " + message.toString());
 
+        // create response
+        LogoutResponse response = new LogoutResponse();
+
+        if (channel.user() == null) {
+            // no user logged in
+            response.setSuccessful(false);
+            response.setMessage("currently not logged in");
+        } else {
+            response.setSuccessful(true);
+            response.setMessage("Successfully logged out");
+
+            userService.removeUser(channel.user());
+            channel.setUser(null);
+        }
+
+        // send response
+        channel.send(response);
     }
 
     @Override

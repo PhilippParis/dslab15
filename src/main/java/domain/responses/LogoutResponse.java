@@ -6,13 +6,13 @@ import executors.IMessageExecutor;
 /**
  * Created by phili on 10/21/15.
  */
-public class LoginResponse implements IMessage {
+public class LogoutResponse implements IMessage {
     private String message;
     private boolean successful;
 
     @Override
     public void execute(IMessageExecutor executor) {
-        executor.executeLoginResponse(this);
+        executor.executeLogoutResponse(this);
     }
 
     public String getMessage() {
@@ -33,7 +33,7 @@ public class LoginResponse implements IMessage {
 
     @Override
     public String toString() {
-        return "LoginResponse{" +
+        return "LogoutResponse{" +
                 "message='" + message + '\'' +
                 ", successful=" + successful +
                 '}';
