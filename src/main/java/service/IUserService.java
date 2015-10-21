@@ -27,4 +27,11 @@ public interface IUserService {
      * @return  all users
      */
     Collection<User> getAllUsers();
+
+    /**
+     * @param user user to authenticate
+     * @param key authentication key
+     * @return true if the user was successfully authenticated
+     */
+    boolean authenticate(User user, String key);
 }

@@ -58,7 +58,7 @@ public class Chatserver implements IChatserverCli, Runnable {
 		this.userResponseStream = userResponseStream;
 
 		// setup services
-		userService = new UserService();
+		userService = new UserService(new Config("user"));
 		channelService = new ChannelService(executorService);
 		messageExecutorFactory = new ServerMessageExecutorFactory(channelService, userService);
 		messageService = new MessageService(messageExecutorFactory, executorService);
