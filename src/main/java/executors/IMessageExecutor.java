@@ -4,10 +4,7 @@ import domain.IChannel;
 import domain.IMessage;
 import domain.User;
 import domain.messages.*;
-import domain.responses.LoginResponse;
-import domain.responses.LogoutResponse;
-import domain.responses.RegisterResponse;
-import domain.responses.SendResponse;
+import domain.responses.*;
 
 /**
  * Created by phili on 10/20/15.
@@ -51,6 +48,10 @@ public abstract class IMessageExecutor {
     }
 
     public void executeRegisterResponse(RegisterResponse message) {
+        // ignore message
+    }
+
+    public void executeLookupResponse(LookupResponse message) {
         // ignore message
     }
 }

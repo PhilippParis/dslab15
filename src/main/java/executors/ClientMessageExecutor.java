@@ -4,10 +4,7 @@ import domain.IChannel;
 import domain.IMessage;
 import domain.User;
 import domain.messages.*;
-import domain.responses.LoginResponse;
-import domain.responses.LogoutResponse;
-import domain.responses.RegisterResponse;
-import domain.responses.SendResponse;
+import domain.responses.*;
 
 import java.io.PrintStream;
 import java.util.logging.Logger;
@@ -54,5 +51,10 @@ public class ClientMessageExecutor extends IMessageExecutor {
     public void executeRegisterResponse(RegisterResponse message) {
         LOGGER.info("message received: " + message.toString());
         userResponseStream.println(message.getMessage());
+    }
+
+    @Override
+    public void executeLookupResponse(LookupResponse message) {
+        LOGGER.info("message received: " + message.toString());
     }
 }

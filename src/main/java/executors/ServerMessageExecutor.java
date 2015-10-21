@@ -3,13 +3,11 @@ package executors;
 import domain.IChannel;
 import domain.User;
 import domain.messages.*;
-import domain.responses.LoginResponse;
-import domain.responses.LogoutResponse;
-import domain.responses.RegisterResponse;
-import domain.responses.SendResponse;
+import domain.responses.*;
 import service.IChannelService;
 import service.IUserService;
 
+import java.net.InetSocketAddress;
 import java.util.logging.Logger;
 
 /**
@@ -144,6 +142,25 @@ public class ServerMessageExecutor extends IMessageExecutor {
     public void executeLookupMessage(LookupMessage message) {
         LOGGER.info("message received: " + message.toString());
 
+        // create response
+        LookupResponse response = new LookupResponse();
+
+        // get user
+        User user = userService.getUser(message.getUsername());
+
+        if (channel.user() == null || !channel.user().isLoggedIn() ||
+                user == null || !user.isLoggedIn() || !user.privateAddressRegistered()) {
+            // user not logged in or user not found / address not registered
+            response.setSuccessful(false);
+        } else {
+            response.setSuccessful(true);
+            InetSocketAddress address = user.getPrivateAddress();
+            response.setHost(address.getHostString());
+            response.setPort(address.getPort());
+        }
+
+        // send response
+        channel.send(response);
     }
 
     @Override
