@@ -2,6 +2,8 @@ package executors;
 
 import domain.IChannel;
 import domain.User;
+import service.IUserService;
+import service.UserService;
 
 import java.io.PrintStream;
 
@@ -16,9 +18,7 @@ public class ClientMessageExecutorFactory implements IMessageExecutorFactory {
     }
 
     @Override
-    public IMessageExecutor create(IChannel channel, User user) {
-        ClientMessageExecutor executor = new ClientMessageExecutor(userResponseStream);
-        executor.setSenderInfo(channel, user);
-        return executor;
+    public IMessageExecutor create(IChannel channel) {
+        return new ClientMessageExecutor(userResponseStream, channel);
     }
 }

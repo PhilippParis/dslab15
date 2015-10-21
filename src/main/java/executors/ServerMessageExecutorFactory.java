@@ -18,9 +18,7 @@ public class ServerMessageExecutorFactory implements IMessageExecutorFactory {
     }
 
     @Override
-    public IMessageExecutor create(IChannel channel, User user) {
-        ServerMessageExecutor executor = new ServerMessageExecutor(channelService, userService);
-        executor.setSenderInfo(channel, user);
-        return executor;
+    public IMessageExecutor create(IChannel channel) {
+        return new ServerMessageExecutor(channelService, userService, channel);
     }
 }

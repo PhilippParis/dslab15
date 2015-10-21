@@ -1,5 +1,6 @@
 package service;
 
+import domain.IChannel;
 import domain.IMessage;
 import executors.IMessageExecutorFactory;
 
@@ -22,15 +23,15 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void execute(final IMessage message) {
-        if (message == null) {
+    public void execute(final IMessage message, final IChannel channel) {
+        if (message == null || channel == null) {
             return;
         }
 
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                message.execute(factory.create());
+                message.execute(factory.create(channel));
             }
         });
     }

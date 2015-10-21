@@ -12,16 +12,10 @@ import java.io.PrintStream;
 public class ClientMessageExecutor implements IMessageExecutor {
     private PrintStream userResponseStream;
     private IChannel channel;
-    private User user;
 
-    public ClientMessageExecutor(PrintStream userResponseStream) {
+    public ClientMessageExecutor(PrintStream userResponseStream, IChannel channel) {
         this.userResponseStream = userResponseStream;
-    }
-
-    @Override
-    public void setSenderInfo(IChannel channel, User user) {
         this.channel = channel;
-        this.user = user;
     }
 
     @Override

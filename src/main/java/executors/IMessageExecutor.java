@@ -9,8 +9,6 @@ import domain.User;
  */
 public interface IMessageExecutor {
 
-    void setSenderInfo(IChannel channel, User user);
-
     void executeLoginMessage(IMessage message);
 
     void executeLogoutMessage(IMessage message);

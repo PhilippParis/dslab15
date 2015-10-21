@@ -20,15 +20,10 @@ public class ServerMessageExecutor implements IMessageExecutor {
     private IChannel channel;
     private User user;
 
-    public ServerMessageExecutor(IChannelService channelService, IUserService userService) {
+    public ServerMessageExecutor(IChannelService channelService, IUserService userService, IChannel channel) {
         this.channelService = channelService;
         this.userService = userService;
-    }
-
-    @Override
-    public void setSenderInfo(IChannel channel, User user) {
         this.channel = channel;
-        this.user = user;
     }
 
     @Override

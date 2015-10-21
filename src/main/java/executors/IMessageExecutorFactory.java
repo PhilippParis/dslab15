@@ -11,5 +11,5 @@ public interface IMessageExecutorFactory {
     /**
      * @return returns a message executor
      */
-    IMessageExecutor create(IChannel channel, User user);
+    IMessageExecutor create(IChannel channel);
 }
