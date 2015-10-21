@@ -6,6 +6,7 @@ import domain.User;
 import domain.messages.*;
 import domain.responses.LoginResponse;
 import domain.responses.LogoutResponse;
+import domain.responses.RegisterResponse;
 import domain.responses.SendResponse;
 
 import java.io.PrintStream;
@@ -48,5 +49,10 @@ public class ClientMessageExecutor extends IMessageExecutor {
     public void executeSendMessage(SendMessage message) {
         LOGGER.info("message received: " + message.toString());
         userResponseStream.println(message.getText());
+    }
+
+    public void executeRegisterResponse(RegisterResponse message) {
+        LOGGER.info("message received: " + message.toString());
+        userResponseStream.println(message.getMessage());
     }
 }

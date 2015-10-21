@@ -5,6 +5,7 @@ import domain.User;
 import domain.messages.*;
 import domain.responses.LoginResponse;
 import domain.responses.LogoutResponse;
+import domain.responses.RegisterResponse;
 import domain.responses.SendResponse;
 import service.IChannelService;
 import service.IUserService;
@@ -120,6 +121,23 @@ public class ServerMessageExecutor extends IMessageExecutor {
     public void executeRegisterMessage(RegisterMessage message) {
         LOGGER.info("message received: " + message.toString());
 
+        // create response
+        RegisterResponse response = new RegisterResponse();
+
+        if (channel.user() == null || !channel.user().isLoggedIn()) {
+            // user not logged in
+            response.setSuccessful(false);
+            response.setMessage("Register failed: not logged in");
+        } else {
+            response.setSuccessful(true);
+            response.setMessage("Successfully registered address for " + channel.user().username());
+
+            // register address
+            channel.user().setPrivateAddress(message.getHost(), message.getPort());
+        }
+
+        // send response
+        channel.send(response);
     }
 
     @Override

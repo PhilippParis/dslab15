@@ -148,7 +148,8 @@ public class Client implements IClientCli, Runnable {
 	@Command
 	@Override
 	public String register(String privateAddress) throws IOException {
-		IMessage msg = new RegisterMessage(privateAddress);
+		String[] input = privateAddress.split(":");
+		IMessage msg = new RegisterMessage(input[0], Integer.valueOf(input[1]));
 		serverChannel.send(msg);
 		return null; // TODO
 	}

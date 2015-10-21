@@ -7,10 +7,12 @@ import executors.IMessageExecutor;
  * Created by phili on 10/20/15.
  */
 public class RegisterMessage implements IMessage {
-    private String address;
+    private String host;
+    private int port;
 
-    public RegisterMessage(String address) {
-        this.address = address;
+    public RegisterMessage(String host, int port) {
+        this.host = host;
+        this.port = port;
     }
 
     @Override
@@ -18,14 +20,27 @@ public class RegisterMessage implements IMessage {
         executor.executeRegisterMessage(this);
     }
 
-    public String getAddress() {
-        return address;
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     @Override
     public String toString() {
         return "RegisterMessage{" +
-                "address='" + address + '\'' +
+                "host='" + host + '\'' +
+                ", port=" + port +
                 '}';
     }
 }

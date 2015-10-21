@@ -1,5 +1,7 @@
 package domain;
 
+import java.net.InetSocketAddress;
+
 /**
  * stores information of user
  */
@@ -7,6 +9,7 @@ public class User {
     private String username;
     private IChannel channel;
     private boolean loggedIn = false;
+    private InetSocketAddress privateAddress = null;
 
     public User(String username, IChannel channel) {
         this.username = username;
@@ -19,10 +22,26 @@ public class User {
 
     public void setLoggedIn(boolean loggedIn) {
         this.loggedIn = loggedIn;
+
+        if (!loggedIn) {
+            privateAddress = null;
+        }
     }
 
     public String username() {
         return username;
+    }
+
+    public InetSocketAddress getPrivateAddress() {
+        return privateAddress;
+    }
+
+    public void setPrivateAddress(String host, int port) {
+        privateAddress = new InetSocketAddress(host, port);
+    }
+
+    public boolean privateAddressRegistered() {
+        return privateAddress != null;
     }
 
     public IChannel channel() {
