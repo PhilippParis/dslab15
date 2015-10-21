@@ -3,21 +3,22 @@ package executors;
 import domain.IChannel;
 import domain.IMessage;
 import domain.User;
+import domain.messages.*;
 
 /**
  * Created by phili on 10/20/15.
  */
 public interface IMessageExecutor {
 
-    void executeLoginMessage(IMessage message);
+    void executeLoginMessage(LoginMessage message);
 
-    void executeLogoutMessage(IMessage message);
+    void executeLogoutMessage(LogoutMessage message);
 
-    void executeSendMessage(IMessage message);
+    void executeSendMessage(SendMessage message);
 
-    void executeRegisterMessage(IMessage message);
+    void executeRegisterMessage(RegisterMessage message);
 
-    void executeLookupMessage(IMessage message);
+    void executeLookupMessage(LookupMessage message);
 
-    void executeListMessage(IMessage message);
+    void executeListMessage(ListMessage message);
 }

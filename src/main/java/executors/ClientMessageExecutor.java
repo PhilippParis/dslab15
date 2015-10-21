@@ -3,6 +3,7 @@ package executors;
 import domain.IChannel;
 import domain.IMessage;
 import domain.User;
+import domain.messages.*;
 
 import java.io.PrintStream;
 
@@ -19,32 +20,32 @@ public class ClientMessageExecutor implements IMessageExecutor {
     }
 
     @Override
-    public void executeLoginMessage(IMessage message) {
+    public void executeLoginMessage(LoginMessage message) {
 
     }
 
     @Override
-    public void executeLogoutMessage(IMessage message) {
+    public void executeLogoutMessage(LogoutMessage message) {
 
     }
 
     @Override
-    public void executeSendMessage(IMessage message) {
+    public void executeSendMessage(SendMessage message) {
 
     }
 
     @Override
-    public void executeRegisterMessage(IMessage message) {
+    public void executeRegisterMessage(RegisterMessage message) {
 
     }
 
     @Override
-    public void executeLookupMessage(IMessage message) {
+    public void executeLookupMessage(LookupMessage message) {
 
     }
 
     @Override
-    public void executeListMessage(IMessage message) {
+    public void executeListMessage(ListMessage message) {
 
     }
 }

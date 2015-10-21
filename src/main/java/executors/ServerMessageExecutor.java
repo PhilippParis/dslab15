@@ -3,6 +3,7 @@ package executors;
 import domain.IChannel;
 import domain.IMessage;
 import domain.User;
+import domain.messages.*;
 import service.ChannelService;
 import service.IChannelService;
 import service.IUserService;
@@ -27,36 +28,37 @@ public class ServerMessageExecutor implements IMessageExecutor {
     }
 
     @Override
-    public void executeLoginMessage(IMessage message) {
-        LOGGER.info("message received: " + message.toString());
-    }
-
-    @Override
-    public void executeLogoutMessage(IMessage message) {
+    public void executeLoginMessage(LoginMessage message) {
         LOGGER.info("message received: " + message.toString());
 
     }
 
     @Override
-    public void executeSendMessage(IMessage message) {
+    public void executeLogoutMessage(LogoutMessage message) {
         LOGGER.info("message received: " + message.toString());
 
     }
 
     @Override
-    public void executeRegisterMessage(IMessage message) {
+    public void executeSendMessage(SendMessage message) {
         LOGGER.info("message received: " + message.toString());
 
     }
 
     @Override
-    public void executeLookupMessage(IMessage message) {
+    public void executeRegisterMessage(RegisterMessage message) {
         LOGGER.info("message received: " + message.toString());
 
     }
 
     @Override
-    public void executeListMessage(IMessage message) {
+    public void executeLookupMessage(LookupMessage message) {
+        LOGGER.info("message received: " + message.toString());
+
+    }
+
+    @Override
+    public void executeListMessage(ListMessage message) {
         LOGGER.info("message received: " + message.toString());
 
     }
