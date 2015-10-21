@@ -25,7 +25,7 @@ public class ClientMessageExecutor extends IMessageExecutor {
     @Override
     public void executeLoginResponse(LoginResponse message) {
         LOGGER.info("message received: " + message.toString());
-
+        userResponseStream.println(message.getMessage());
     }
 
     @Override

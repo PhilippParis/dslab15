@@ -30,6 +30,16 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public boolean removeUser(User user) {
+        if (users.containsKey(user.username())) {
+            users.remove(user.username());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public User getUser(String username) {
         return users.get(username);
     }

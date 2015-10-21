@@ -20,7 +20,6 @@ public class ServerMessageExecutor extends IMessageExecutor {
     private IChannelService channelService;
     private IUserService userService;
     private IChannel channel;
-    private User user;
 
     public ServerMessageExecutor(IChannelService channelService, IUserService userService, IChannel channel) {
         this.channelService = channelService;
@@ -32,22 +31,29 @@ public class ServerMessageExecutor extends IMessageExecutor {
     public void executeLoginMessage(LoginMessage message) {
         LOGGER.info("message received: " + message.toString());
 
-        // create user
-        User user = new User(message.getUsername());
-
-        // create respons
+        // create response
         LoginResponse response = new LoginResponse();
 
-        boolean authenticated = userService.authenticate(user, message.getPassword());
-        response.setSuccessfull(authenticated);
-
-        if (authenticated) {
-            userService.addUser(user);
-            channel.setUser(user);
-            response.setMessage("Successfully logged in");
-
+        if (userService.getUser(message.getUsername()) != null) {
+            // user already logged in
+            response.setSuccessfull(false);
+            response.setMessage("user '" + message.getUsername() + "' already logged in");
         } else {
-            response.setMessage("Wrong username or password");
+            // create user
+            User user = new User(message.getUsername());
+
+            if (userService.authenticate(user, message.getPassword())) {
+                // successfully logged in
+                userService.addUser(user);
+                channel.setUser(user);
+
+                response.setSuccessfull(true);
+                response.setMessage("Successfully logged in");
+            } else {
+                // wrong username / password
+                response.setSuccessfull(false);
+                response.setMessage("Wrong username or password");
+            }
         }
 
         // send response

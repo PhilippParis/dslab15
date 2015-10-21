@@ -17,6 +17,14 @@ public interface IUserService {
     boolean addUser(User user);
 
     /**
+     * removes a user
+     * @param   user user to remove
+     * @return  true if the user was successfully removed;
+     *          false if the user did not exist
+     */
+    boolean removeUser(User user);
+
+    /**
      * @param   username username of the user
      * @return  the user with the given username or null
      *          if no user with this username was found
