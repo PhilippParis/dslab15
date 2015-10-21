@@ -17,6 +17,7 @@ import cli.Shell;
 import domain.Dispatcher;
 import domain.IChannel;
 import domain.UDPChannel;
+import domain.User;
 import executors.IMessageExecutorFactory;
 import executors.ServerMessageExecutorFactory;
 import service.*;
@@ -108,8 +109,11 @@ public class Chatserver implements IChatserverCli, Runnable {
 	@Command
 	@Override
 	public String users() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		String output = "";
+		for (User user : userService.getAllUsers()) {
+			output += user.username() + " " + (user.isLoggedIn()? "online" : "offline") + "\n";
+		}
+		return  output;
 	}
 
 	@Command
