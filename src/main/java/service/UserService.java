@@ -40,7 +40,7 @@ public class UserService implements IUserService {
         }
 
         try {
-            return loginConfig.getString(user.username()).equals(password);
+            return loginConfig.getString(user.username() + ".password").equals(password);
         } catch (MissingResourceException e) {
             // wrong username
             return false;

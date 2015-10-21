@@ -4,21 +4,38 @@ import domain.IChannel;
 import domain.IMessage;
 import domain.User;
 import domain.messages.*;
+import domain.responses.LoginResponse;
 
 /**
  * Created by phili on 10/20/15.
  */
-public interface IMessageExecutor {
+public abstract class IMessageExecutor {
 
-    void executeLoginMessage(LoginMessage message);
+    public void executeLoginMessage(LoginMessage message) {
+        // ignore message
+    }
 
-    void executeLogoutMessage(LogoutMessage message);
+    public void executeLogoutMessage(LogoutMessage message) {
+        // ignore message
+    }
 
-    void executeSendMessage(SendMessage message);
+    public void executeSendMessage(SendMessage message) {
+        // ignore message
+    }
 
-    void executeRegisterMessage(RegisterMessage message);
+    public void executeRegisterMessage(RegisterMessage message) {
+        // ignore message
+    }
 
-    void executeLookupMessage(LookupMessage message);
+    public void executeLookupMessage(LookupMessage message) {
+        // ignore message
+    }
 
-    void executeListMessage(ListMessage message);
+    public void executeListMessage(ListMessage message) {
+        // ignore message
+    }
+
+    public void executeLoginResponse(LoginResponse message) {
+        // ignore message
+    }
 }
