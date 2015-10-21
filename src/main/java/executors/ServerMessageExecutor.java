@@ -5,6 +5,7 @@ import domain.User;
 import domain.messages.*;
 import domain.responses.LoginResponse;
 import domain.responses.LogoutResponse;
+import domain.responses.SendResponse;
 import service.IChannelService;
 import service.IUserService;
 
@@ -38,7 +39,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
             response.setMessage("user '" + message.getUsername() + "' already logged in");
         } else {
             // create user
-            User user = new User(message.getUsername());
+            User user = new User(message.getUsername(), channel);
 
             if (userService.authenticate(user, message.getPassword())) {
                 // successfully logged in
@@ -85,6 +86,32 @@ public class ServerMessageExecutor extends IMessageExecutor {
     public void executeSendMessage(SendMessage message) {
         LOGGER.info("message received: " + message.toString());
 
+        // create response for user
+        SendResponse response = new SendResponse();
+
+        // check if user is logged in
+        if (channel.user() == null) {
+            // user not logged in
+            response.setMessage("sending message failed: not logged in");
+            response.setSuccessful(false);
+        } else {
+            // user logged in
+            response.setMessage("sending message successful");
+            response.setSuccessful(true);
+
+            // create new send message with sender name
+            SendMessage msg = new SendMessage(channel.user().username() + ": " + message.getText());
+
+            // send msg to all other users
+            for (User user : userService.getAllUsers()) {
+                if (!user.equals(channel.user())) {
+                    user.channel().send(msg);
+                }
+            }
+        }
+
+        // send response to sender
+        channel.send(response);
     }
 
     @Override

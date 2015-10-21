@@ -6,6 +6,7 @@ import domain.User;
 import domain.messages.*;
 import domain.responses.LoginResponse;
 import domain.responses.LogoutResponse;
+import domain.responses.SendResponse;
 
 /**
  * Created by phili on 10/20/15.
@@ -41,6 +42,10 @@ public abstract class IMessageExecutor {
     }
 
     public void executeLogoutResponse(LogoutResponse message) {
+        // ignore message
+    }
+
+    public void executeSendResponse(SendResponse message) {
         // ignore message
     }
 }
