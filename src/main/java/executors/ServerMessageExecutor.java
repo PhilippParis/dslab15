@@ -33,19 +33,22 @@ public class ServerMessageExecutor extends IMessageExecutor {
         // create response
         LoginResponse response = new LoginResponse();
 
-        if (userService.getUser(message.getUsername()) != null) {
+        if (channel.user() != null && channel.user().isLoggedIn()) {
             // user already logged in
             response.setSuccessful(false);
             response.setMessage("user '" + message.getUsername() + "' already logged in");
         } else {
-            // create user
-            User user = new User(message.getUsername(), channel);
-
-            if (userService.authenticate(user, message.getPassword())) {
-                // successfully logged in
+            if (channel.user() == null) {
+                // create user
+                User user = new User(message.getUsername(), channel);
                 userService.addUser(user);
                 channel.setUser(user);
+            }
 
+            // authenticate user
+            if (userService.authenticate(channel.user(), message.getPassword())) {
+                // successfully logged in
+                channel.user().setLoggedIn(true);
                 response.setSuccessful(true);
                 response.setMessage("Successfully logged in");
             } else {
@@ -66,16 +69,15 @@ public class ServerMessageExecutor extends IMessageExecutor {
         // create response
         LogoutResponse response = new LogoutResponse();
 
-        if (channel.user() == null) {
-            // no user logged in
+        if (channel.user() == null || !channel.user().isLoggedIn()) {
+            // user not logged in
             response.setSuccessful(false);
             response.setMessage("currently not logged in");
         } else {
+            channel.user().setLoggedIn(false);
+
             response.setSuccessful(true);
             response.setMessage("Successfully logged out");
-
-            userService.removeUser(channel.user());
-            channel.setUser(null);
         }
 
         // send response
@@ -90,7 +92,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
         SendResponse response = new SendResponse();
 
         // check if user is logged in
-        if (channel.user() == null) {
+        if (channel.user() == null || !channel.user().isLoggedIn()) {
             // user not logged in
             response.setMessage("sending message failed: not logged in");
             response.setSuccessful(false);

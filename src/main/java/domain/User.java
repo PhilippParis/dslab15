@@ -6,10 +6,19 @@ package domain;
 public class User {
     private String username;
     private IChannel channel;
+    private boolean loggedIn = false;
 
     public User(String username, IChannel channel) {
         this.username = username;
         this.channel = channel;
+    }
+
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
     }
 
     public String username() {
