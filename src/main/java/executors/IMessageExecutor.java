@@ -32,6 +32,10 @@ public abstract class IMessageExecutor {
         // ignore message
     }
 
+    public void executePrivateMessage(PrivateMessage message) {
+        // ignore message
+    }
+
     public void executeLoginResponse(LoginResponse message) {
         // ignore message
     }

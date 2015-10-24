@@ -32,6 +32,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
 
         // create response
         LoginResponse response = new LoginResponse();
+        response.setId(message.getId());
 
         // get user
         User user = userService.getUser(message.getUsername());
@@ -71,6 +72,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
 
         // create response
         LogoutResponse response = new LogoutResponse();
+        response.setId(message.getId());
 
         if (channel.user() == null || !channel.user().isLoggedIn()) {
             // user not logged in
@@ -93,6 +95,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
 
         // create response for user
         SendResponse response = new SendResponse();
+        response.setId(message.getId());
 
         // check if user is logged in
         if (channel.user() == null || !channel.user().isLoggedIn()) {
@@ -125,6 +128,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
 
         // create response
         RegisterResponse response = new RegisterResponse();
+        response.setId(message.getId());
 
         if (channel.user() == null || !channel.user().isLoggedIn()) {
             // user not logged in
@@ -148,6 +152,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
 
         // create response
         LookupResponse response = new LookupResponse();
+        response.setId(message.getId());
 
         // get user
         User user = userService.getUser(message.getUsername());
@@ -182,6 +187,8 @@ public class ServerMessageExecutor extends IMessageExecutor {
 
         // create response
         ListResponse response = new ListResponse();
+        response.setId(message.getId());
+
         response.setSocketAddress(message.getSocketAddress());
         response.setOnlineUsers(users);
         channel.send(response);

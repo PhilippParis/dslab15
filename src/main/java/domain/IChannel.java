@@ -12,6 +12,17 @@ public interface IChannel extends Runnable {
     void send(IMessage message);
 
     /**
+     * sends the message and waits for a response
+     * times out after a specific time
+     *
+     * response will not be executed by the MessageExecutor
+     *
+     * @param message message to send
+     * @return response (can be null if timeout occurred)
+     */
+    IMessage sendAndWait(IMessage message);
+
+    /**
      * @return  returns the user associated with this channel.
      *          null if no user logged in via this channel
      */
@@ -22,4 +33,9 @@ public interface IChannel extends Runnable {
      * @param user user
      */
     void setUser(User user);
+
+    /**
+     * stops the connection and closes the channel
+     */
+    void stop();
 }

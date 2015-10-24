@@ -36,6 +36,11 @@ public class UDPChannel implements IChannel {
     }
 
     @Override
+    public IMessage sendAndWait(IMessage message) {
+        return null;
+    }
+
+    @Override
     public User user() {
         return null;
     }

@@ -48,6 +48,18 @@ public class ClientMessageExecutor extends IMessageExecutor {
         userResponseStream.println(message.getText());
     }
 
+    @Override
+    public void executePrivateMessage(PrivateMessage message) {
+        LOGGER.info("message received: " + message.toString());
+        userResponseStream.println(message.getText());
+
+        AckResponse response = new AckResponse();
+        response.setId(message.getId());
+        channel.send(response);
+
+        // TODO stop channel
+    }
+
     public void executeRegisterResponse(RegisterResponse message) {
         LOGGER.info("message received: " + message.toString());
         userResponseStream.println(message.getMessage());

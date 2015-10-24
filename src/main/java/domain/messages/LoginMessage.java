@@ -6,7 +6,7 @@ import executors.IMessageExecutor;
 /**
  * Created by phili on 10/20/15.
  */
-public class LoginMessage implements IMessage {
+public class LoginMessage extends IMessage {
     private String username;
     private String password;
 

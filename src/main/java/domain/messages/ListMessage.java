@@ -8,8 +8,7 @@ import java.net.SocketAddress;
 /**
  * Created by phili on 10/20/15.
  */
-public class ListMessage implements UDPMessage {
-    private SocketAddress address;
+public class ListMessage extends UDPMessage {
 
     public ListMessage() {
     }
@@ -24,13 +23,5 @@ public class ListMessage implements UDPMessage {
         return "ListMessage{}";
     }
 
-    @Override
-    public void setSocketAddress(SocketAddress address) {
-        this.address = address;
-    }
 
-    @Override
-    public SocketAddress getSocketAddress() {
-        return address;
-    }
 }

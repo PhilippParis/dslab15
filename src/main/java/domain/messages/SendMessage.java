@@ -6,7 +6,7 @@ import executors.IMessageExecutor;
 /**
  * Created by phili on 10/20/15.
  */
-public class SendMessage implements IMessage {
+public class SendMessage extends IMessage {
     private String text;
 
     public SendMessage(String text) {

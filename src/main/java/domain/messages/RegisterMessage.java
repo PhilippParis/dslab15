@@ -6,7 +6,7 @@ import executors.IMessageExecutor;
 /**
  * Created by phili on 10/20/15.
  */
-public class RegisterMessage implements IMessage {
+public class RegisterMessage extends IMessage {
     private String host;
     private int port;
 

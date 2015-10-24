@@ -6,7 +6,7 @@ import executors.IMessageExecutor;
 /**
  * Created by phili on 10/21/15.
  */
-public class LookupResponse implements IMessage {
+public class LookupResponse extends IMessage {
     private String host;
     private int port;
     private boolean successful;

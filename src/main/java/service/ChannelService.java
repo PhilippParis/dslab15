@@ -25,6 +25,12 @@ public class ChannelService implements IChannelService {
     }
 
     @Override
+    public void closeChannel(IChannel channel) {
+        channels.remove(channel);
+        channel.stop();
+    }
+
+    @Override
     public Collection<IChannel> getAllChannels() {
         return channels;
     }

@@ -6,7 +6,7 @@ import executors.IMessageExecutor;
 /**
  * Created by phili on 10/20/15.
  */
-public class LookupMessage implements IMessage {
+public class LookupMessage extends IMessage {
     private String username;
 
     public LookupMessage(String username) {

@@ -6,7 +6,7 @@ import executors.IMessageExecutor;
 /**
  * Created by phili on 10/20/15.
  */
-public class LogoutMessage implements IMessage {
+public class LogoutMessage extends IMessage {
 
     public LogoutMessage() {
 

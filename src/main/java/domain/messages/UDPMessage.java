@@ -7,9 +7,14 @@ import java.net.SocketAddress;
 /**
  * Created by phili on 10/21/15.
  */
-public interface UDPMessage extends IMessage {
+public abstract class UDPMessage extends IMessage {
+    private SocketAddress address;
 
-    void setSocketAddress(SocketAddress address);
+    public void setSocketAddress(SocketAddress address) {
+        this.address = address;
+    }
 
-    SocketAddress getSocketAddress();
+    public SocketAddress getSocketAddress() {
+        return address;
+    }
 }

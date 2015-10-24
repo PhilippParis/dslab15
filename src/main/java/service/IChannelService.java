@@ -17,6 +17,12 @@ public interface IChannelService {
     void addChannel(IChannel channel);
 
     /**
+     * closes the channel
+     * @param channel channel to close
+     */
+    void closeChannel(IChannel channel);
+
+    /**
      * @return  returns all channels
      */
     Collection<IChannel> getAllChannels();

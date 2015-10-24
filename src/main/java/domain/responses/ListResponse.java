@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Created by phili on 10/21/15.
  */
-public class ListResponse implements UDPMessage {
+public class ListResponse extends UDPMessage {
     private SocketAddress address;
     private ArrayList<String> onlineUsers;
 
