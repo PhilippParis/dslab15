@@ -21,8 +21,7 @@ public class TCPChannel implements IChannel {
     private User user = null;
     private AtomicLong messageID = new AtomicLong();
 
-    private ConcurrentHashMap<Long, IMessage> messages = new ConcurrentHashMap<Long, IMessage>();
-    private ConcurrentHashMap<Long, IMessage> responses = new ConcurrentHashMap<Long, IMessage>();
+    private ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<Long, Task>();
 
     public TCPChannel(Socket socket, IMessageService messageService) {
         this.socket = socket;
@@ -40,23 +39,23 @@ public class TCPChannel implements IChannel {
 
     @Override
     public IMessage sendAndWait(IMessage message) {
+        // create unique message id
         long id = messageID.incrementAndGet();
 
-        synchronized (message) {
-            message.setId(id);
-            messages.put(message.getId(), message);
-            send(message);
+        // create task
+        message.setId(id);
+        Task task = new Task(message);
+        tasks.put(id, task);
 
-            try {
-                if (!responses.containsKey(message.getId())) {
-                    message.wait(1000); // timeout 1 sec
-                }
-            } catch (InterruptedException e) {
-                // ignore exception
-            }
+        // send message
+        send(message);
 
-            return responses.remove(message.getId());
-        }
+        // wait for response
+        task.await(1000);
+
+        // remove task and return response
+        tasks.remove(id);
+        return task.getResponse();
     }
 
     @Override
@@ -88,14 +87,11 @@ public class TCPChannel implements IChannel {
 
                 IMessage response = messageService.decode(buffer);
 
-                if (messages.containsKey(response.getId())) {
+                if (tasks.containsKey(response.getId())) {
                     // if send and wait is active -> notify waiting thread
-                    responses.put(response.getId(), response);
-                    IMessage message = messages.remove(response.getId());
-                    synchronized (message) {
-                        message.notify();
-                    }
-
+                    Task task = tasks.get(response.getId());
+                    task.setResponse(response);
+                    task.signal();
                 } else {
                     // send and wait not active -> use executor
                     messageService.execute(response, this);
