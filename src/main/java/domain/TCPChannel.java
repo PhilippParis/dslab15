@@ -14,18 +14,13 @@ import java.util.logging.Logger;
 /**
  * Created by phili on 10/20/15.
  */
-public class TCPChannel implements IChannel {
+public class TCPChannel extends IChannel {
     private final static Logger LOGGER = Logger.getLogger(TCPChannel.class.getName());
     private Socket socket;
-    private IMessageService messageService;
-    private User user = null;
-    private AtomicLong messageID = new AtomicLong();
-
-    private ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<Long, Task>();
 
     public TCPChannel(Socket socket, IMessageService messageService) {
+        super(messageService);
         this.socket = socket;
-        this.messageService = messageService;
     }
 
     @Override
@@ -38,34 +33,10 @@ public class TCPChannel implements IChannel {
     }
 
     @Override
-    public IMessage sendAndWait(IMessage message) {
-        // create unique message id
-        long id = messageID.incrementAndGet();
-
-        // create task
-        message.setId(id);
-        Task task = new Task(message);
-        tasks.put(id, task);
-
-        // send message
-        send(message);
-
-        // wait for response
-        task.await(1000);
-
-        // remove task and return response
-        tasks.remove(id);
-        return task.getResponse();
-    }
-
-    @Override
-    public User user() {
-        return user;
-    }
-
-    @Override
-    public void setUser(User user) {
-        this.user = user;
+    public IMessage read() throws IOException, ClassNotFoundException {
+        byte[] buffer = new byte[1024];
+        socket.getInputStream().read(buffer);
+        return  messageService.decode(buffer);
     }
 
     @Override
@@ -75,30 +46,5 @@ public class TCPChannel implements IChannel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void run() {
-        LOGGER.log(Level.INFO, "TCP channel started");
-        try {
-            while(true) {
-                byte[] buffer = new byte[1024];
-                socket.getInputStream().read(buffer);
-
-                IMessage response = messageService.decode(buffer);
-
-                if (tasks.containsKey(response.getId())) {
-                    // if send and wait is active -> notify waiting thread
-                    Task task = tasks.get(response.getId());
-                    task.setResponse(response);
-                    task.signal();
-                } else {
-                    // send and wait not active -> use executor
-                    messageService.execute(response, this);
-                }
-            }
-        } catch (IOException | ClassNotFoundException e) {
-        }
-        LOGGER.log(Level.INFO, "TCP channel stopped");
     }
 }

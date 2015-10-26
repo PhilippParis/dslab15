@@ -13,13 +13,12 @@ import java.util.logging.Logger;
 /**
  * Created by phili on 10/21/15.
  */
-public class UDPChannel implements IChannel {
+public class UDPChannel extends IChannel {
     private final static Logger LOGGER = Logger.getLogger(UDPChannel.class.getName());
-    private IMessageService messageService;
     private DatagramSocket socket;
 
     public UDPChannel(IMessageService messageService, DatagramSocket socket) {
-        this.messageService = messageService;
+        super(messageService);
         this.socket = socket;
     }
 
@@ -36,39 +35,19 @@ public class UDPChannel implements IChannel {
     }
 
     @Override
-    public IMessage sendAndWait(IMessage message) {
-        return null;
+    public IMessage read() throws IOException, ClassNotFoundException {
+        byte[] buffer = new byte[1024];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        socket.receive(packet);
+
+        // set sender address
+        UDPMessage message = (UDPMessage) messageService.decode(buffer);
+        message.setSocketAddress(packet.getSocketAddress());
+        return message;
     }
 
     @Override
-    public User user() {
-        return null;
-    }
-
-    @Override
-    public void setUser(User user) {
-        // not needed
-    }
-
-    @Override
-    public void run() {
-        LOGGER.log(Level.INFO, "UDP channel started");
-        try {
-            while(true) {
-                byte[] buffer = new byte[1024];
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
-
-                // set sender address
-                UDPMessage message = (UDPMessage) messageService.decode(buffer);
-                message.setSocketAddress(packet.getSocketAddress());
-
-                // execute
-                messageService.execute(message, this);
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        LOGGER.log(Level.INFO, " UDP channel stopped");
+    public void stop() {
+        socket.close();
     }
 }
