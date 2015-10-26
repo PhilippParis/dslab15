@@ -16,8 +16,6 @@ public abstract class IChannel implements Runnable {
     private User user;
     private AtomicLong messageID = new AtomicLong();
     private ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<Long, Task>();
-    private boolean running = true;
-
     protected IMessageService messageService;
 
     public IChannel(IMessageService messageService) {
@@ -25,7 +23,6 @@ public abstract class IChannel implements Runnable {
     }
 
     /**
-
      * sends a message via this channel
      * @param message message to send
      */
