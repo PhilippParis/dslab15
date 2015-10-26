@@ -26,10 +26,6 @@ public class Task {
         this.response = response;
     }
 
-    public Long getId() {
-        return this.message.getId();
-    }
-
     /**
      *
      * @param timeout
