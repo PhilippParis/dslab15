@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 
 import cli.Command;
 import cli.Shell;
-import domain.Dispatcher;
-import domain.IChannel;
-import domain.UDPChannel;
+import channels.Dispatcher;
+import channels.IChannel;
+import channels.UDPChannel;
 import domain.User;
 import executors.IMessageExecutorFactory;
 import service.*;

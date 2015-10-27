@@ -1,6 +1,6 @@
 package client;
 
-import domain.IChannel;
+import channels.IChannel;
 import domain.messages.*;
 import domain.responses.*;
 import executors.IMessageExecutor;

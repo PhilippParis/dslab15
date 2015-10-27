@@ -1,7 +1,6 @@
 package executors;
 
-import domain.IChannel;
-import domain.User;
+import channels.IChannel;
 
 /**
  * Created by phili on 10/20/15.

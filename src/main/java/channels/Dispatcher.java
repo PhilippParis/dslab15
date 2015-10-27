@@ -1,4 +1,4 @@
-package domain;
+package channels;
 
 import service.IChannelService;
 import service.IMessageService;

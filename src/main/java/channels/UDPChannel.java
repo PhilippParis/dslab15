@@ -1,12 +1,12 @@
-package domain;
+package channels;
 
+import domain.IMessage;
 import domain.messages.UDPMessage;
 import service.IMessageService;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.SocketAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

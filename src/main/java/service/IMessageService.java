@@ -1,6 +1,6 @@
 package service;
 
-import domain.IChannel;
+import channels.IChannel;
 import domain.IMessage;
 
 import java.io.IOException;

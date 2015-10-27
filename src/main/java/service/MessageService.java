@@ -1,12 +1,11 @@
 package service;
 
-import domain.IChannel;
+import channels.IChannel;
 import domain.IMessage;
 import executors.IMessageExecutorFactory;
 
 import java.io.*;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**

@@ -1,5 +1,8 @@
-package domain;
+package channels;
 
+import domain.IMessage;
+import domain.Task;
+import domain.User;
 import service.IMessageService;
 
 import java.io.IOException;

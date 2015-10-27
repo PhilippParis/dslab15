@@ -1,5 +1,7 @@
 package domain;
 
+import channels.IChannel;
+
 import java.net.InetSocketAddress;
 
 /**

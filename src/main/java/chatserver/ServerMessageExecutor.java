@@ -1,6 +1,6 @@
 package chatserver;
 
-import domain.IChannel;
+import channels.IChannel;
 import domain.User;
 import domain.messages.*;
 import domain.responses.*;

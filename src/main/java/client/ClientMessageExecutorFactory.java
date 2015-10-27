@@ -1,7 +1,6 @@
 package client;
 
-import client.ClientMessageExecutor;
-import domain.IChannel;
+import channels.IChannel;
 import executors.IMessageExecutor;
 import executors.IMessageExecutorFactory;
 import service.IChannelService;

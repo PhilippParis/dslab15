@@ -1,6 +1,6 @@
 package service;
 
-import domain.IChannel;
+import channels.IChannel;
 
 import java.util.ArrayList;
 import java.util.Collection;

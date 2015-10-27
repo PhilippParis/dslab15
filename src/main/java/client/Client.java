@@ -8,6 +8,10 @@ import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import channels.Dispatcher;
+import channels.IChannel;
+import channels.TCPChannel;
+import channels.UDPChannel;
 import cli.Command;
 import cli.Shell;
 import domain.*;
