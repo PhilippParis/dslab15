@@ -76,51 +76,31 @@ public class Client implements IClientCli, Runnable {
 
 	@Override
 	public void run() {
+		// connect to server
+		try {
+			setupTCP(config.getString("chatserver.host"), config.getInt("chatserver.tcp.port"));
+			setupUDP(config.getString("chatserver.host"), config.getInt("chatserver.udp.port"));
+		} catch (IOException e) {
+			LOGGER.log(Level.INFO, "Connection buildup failed");
+			userResponseStream.println("Connection buildup failed");
+			return;
+		}
+
 		// start shell thread
 		executorService.execute(shell);
-
-		// connect to server
-		setupTCP(config.getString("chatserver.host"), config.getInt("chatserver.tcp.port"));
-		setupUDP(config.getString("chatserver.host"), config.getInt("chatserver.udp.port"));
 	}
 
-	private void setupTCP(String host, int port) {
-		try {
-			Socket socket = new Socket(host, port);
-			serverChannel = new TCPChannel(socket, messageService);
-			channelService.addChannel(serverChannel);
-
-		} catch (IOException e) {
-			LOGGER.log(Level.INFO, "could not connect to server");
-			userResponseStream.println("could not connect to server");
-			shutdown();
-		}
+	private void setupTCP(String host, int port) throws IOException {
+		Socket socket = new Socket(host, port);
+		serverChannel = new TCPChannel(socket, messageService);
+		channelService.addChannel(serverChannel);
 	}
 
-	private void setupUDP(String host, int port) {
-		try {
-			DatagramSocket socket = new DatagramSocket();
-			serverUDPAddress = new InetSocketAddress(host, port);
-			udpChannel = new UDPChannel(messageService, socket);
-			channelService.addChannel(udpChannel);
-		} catch (SocketException e) {
-			LOGGER.log(Level.INFO, "setting up udp socket failed");
-			userResponseStream.println("setting up udp socket failed");
-			shutdown();
-		}
-	}
-
-	/**
-	 * shuts down the client: stops threads closes sockets
-	 */
-	private void shutdown() {
-		if (dispatcher != null) {
-			dispatcher.stop();
-		}
-
-		channelService.closeAll();
-		executorService.shutdown();
-		shell.close();
+	private void setupUDP(String host, int port) throws SocketException {
+		DatagramSocket socket = new DatagramSocket();
+		serverUDPAddress = new InetSocketAddress(host, port);
+		udpChannel = new UDPChannel(messageService, socket);
+		channelService.addChannel(udpChannel);
 	}
 
 	@Command
@@ -128,6 +108,10 @@ public class Client implements IClientCli, Runnable {
 	public String login(String username, String password) throws IOException {
 		IMessage msg = new LoginMessage(username, password);
 		LoginResponse response = (LoginResponse) serverChannel.sendAndWait(msg);
+
+		if (response == null) {
+			return "timeout occurred; response not received";
+		}
 		return response.getMessage();
 	}
 
@@ -255,8 +239,25 @@ public class Client implements IClientCli, Runnable {
 	@Command
 	@Override
 	public String exit() throws IOException {
-		shutdown();
-		return "exiting...";
+		LOGGER.info("shutdown client");
+
+		// streams
+		userResponseStream.close();
+		try {
+			userRequestStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// threads / sockets
+		if (dispatcher != null) {
+			dispatcher.stop();
+		}
+
+		channelService.closeAll();
+		shell.close();
+		executorService.shutdown();
+		return null;
 	}
 
 	/**

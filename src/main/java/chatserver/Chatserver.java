@@ -110,6 +110,15 @@ public class Chatserver implements IChatserverCli, Runnable {
 	 * shuts down the server: stops threads and closes open sockets
 	 */
 	private void shutdown() {
+		// streams
+		userResponseStream.close();
+		try {
+			userRequestStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// threads / sockets
 		if (dispatcher != null) {
 			dispatcher.stop();
 		}
