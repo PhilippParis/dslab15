@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -107,38 +104,42 @@ public class Client implements IClientCli, Runnable {
 	@Override
 	public String login(String username, String password) throws IOException {
 		IMessage msg = new LoginMessage(username, password);
-		LoginResponse response = (LoginResponse) serverChannel.sendAndWait(msg);
 
-		if (response == null) {
+		try {
+			LoginResponse response = serverChannel.sendAndWait(msg);
+			return response.getMessage();
+		} catch (TimeoutException e) {
 			return "timeout occurred; response not received";
 		}
-		return response.getMessage();
 	}
 
 	@Command
 	@Override
 	public String logout() throws IOException {
 		IMessage msg = new LogoutMessage();
-		LogoutResponse response = (LogoutResponse) serverChannel.sendAndWait(msg);
 
-		if (response == null) {
+		try {
+			LogoutResponse response = serverChannel.sendAndWait(msg);
+			return response.getMessage();
+		} catch (TimeoutException e) {
 			return "timeout occurred; response not received";
 		}
-		return response.getMessage();
 	}
 
 	@Command
 	@Override
 	public String send(String message) throws IOException {
 		IMessage msg = new SendMessage(message);
-		SendResponse response = (SendResponse) serverChannel.sendAndWait(msg);
 
-		if (response == null) {
+		try {
+			SendResponse response = serverChannel.sendAndWait(msg);
+			if (!response.isSuccessful()) {
+				return response.getMessage();
+			}
+		} catch (TimeoutException e) {
 			return "timeout occurred; response not received";
 		}
-		if (!response.isSuccessful()) {
-			return response.getMessage();
-		}
+
 		return null;
 	}
 
@@ -147,9 +148,11 @@ public class Client implements IClientCli, Runnable {
 	public String list() throws IOException {
 		UDPMessage msg = new ListMessage();
 		msg.setSocketAddress(serverUDPAddress);
-		ListResponse response = (ListResponse) udpChannel.sendAndWait(msg);
+		ListResponse response = null;
 
-		if (response == null) {
+		try {
+			response = udpChannel.sendAndWait(msg);
+		} catch (TimeoutException e) {
 			return "timeout occurred; response not received";
 		}
 
@@ -167,9 +170,14 @@ public class Client implements IClientCli, Runnable {
 
 		// do lookup
 		LookupMessage lookupMessage = new LookupMessage(username);
-		LookupResponse response = (LookupResponse) serverChannel.sendAndWait(lookupMessage);
+		LookupResponse response = null;
+		try {
+			response = serverChannel.sendAndWait(lookupMessage);
+		} catch (TimeoutException e) {
+			return "timeout occurred; response not received";
+		}
 
-		if (response == null || !response.isSuccessful()) {
+		if (!response.isSuccessful()) {
 			return "Wrong username or user not reachable.";
 		}
 
@@ -179,9 +187,9 @@ public class Client implements IClientCli, Runnable {
 		channelService.addChannel(privateChannel);
 
 		// send private message and wait for acknowledge
-		AckResponse acknowledge = (AckResponse) privateChannel.sendAndWait(privateMessage);
-
-		if (acknowledge == null) {
+		try {
+			privateChannel.sendAndWait(privateMessage);
+		} catch (TimeoutException e) {
 			return "timeout ocurred; !ack not received";
 		}
 
@@ -194,9 +202,11 @@ public class Client implements IClientCli, Runnable {
 	@Override
 	public String lookup(String username) throws IOException {
 		IMessage msg = new LookupMessage(username);
-		LookupResponse response = (LookupResponse) serverChannel.sendAndWait(msg);
+		LookupResponse response = null;
 
-		if (response == null) {
+		try {
+			response = serverChannel.sendAndWait(msg);
+		} catch (TimeoutException e) {
 			return "* timeout occurred; response not received *";
 		}
 
@@ -208,9 +218,11 @@ public class Client implements IClientCli, Runnable {
 	public String register(String privateAddress) throws IOException {
 		String[] input = privateAddress.split(":");
 		RegisterMessage msg = new RegisterMessage(input[0], Integer.valueOf(input[1]));
-		RegisterResponse response = (RegisterResponse) serverChannel.sendAndWait(msg);
+		RegisterResponse response = null;
 
-		if (response == null) {
+		try {
+			response = serverChannel.sendAndWait(msg);
+		} catch (TimeoutException e) {
 			return "timeout ocurred; response not received";
 		}
 

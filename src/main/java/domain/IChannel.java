@@ -4,6 +4,7 @@ import service.IMessageService;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +40,7 @@ public abstract class IChannel implements Runnable {
      * @param message message to send
      * @return response (can be null if timeout occurred)
      */
-    public IMessage sendAndWait(IMessage message) {
+    public <ResponseType extends IMessage> ResponseType sendAndWait(IMessage message) throws TimeoutException {
         // create unique message id
         long id = messageID.incrementAndGet();
 
@@ -52,11 +53,13 @@ public abstract class IChannel implements Runnable {
         send(message);
 
         // wait for response
-        task.await(1000);
+        if (task.await(1000)) {
+            throw new TimeoutException("response not received in 1000ms");
+        }
 
         // remove task and return response
         tasks.remove(id);
-        return task.getResponse();
+        return (ResponseType) task.getResponse();
     }
 
     @Override
