@@ -13,7 +13,6 @@ import cli.Shell;
 import domain.*;
 import domain.messages.*;
 import domain.responses.*;
-import executors.ClientMessageExecutorFactory;
 import executors.IMessageExecutorFactory;
 import service.ChannelService;
 import service.IChannelService;

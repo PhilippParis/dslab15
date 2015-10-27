@@ -1,9 +1,10 @@
-package executors;
+package chatserver;
 
 import domain.IChannel;
 import domain.User;
 import domain.messages.*;
 import domain.responses.*;
+import executors.IMessageExecutor;
 import service.IChannelService;
 import service.IUserService;
 

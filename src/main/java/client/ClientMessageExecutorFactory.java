@@ -1,10 +1,10 @@
-package executors;
+package client;
 
+import client.ClientMessageExecutor;
 import domain.IChannel;
-import domain.User;
+import executors.IMessageExecutor;
+import executors.IMessageExecutorFactory;
 import service.IChannelService;
-import service.IUserService;
-import service.UserService;
 
 import java.io.PrintStream;
 
