@@ -59,4 +59,8 @@ public abstract class IMessageExecutor {
     public void executeListResponse(ListResponse message) {
         // ignore message
     }
+
+    public void executeAckResponse(AckResponse message) {
+        // ignore message
+    }
 }

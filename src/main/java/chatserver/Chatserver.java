@@ -131,7 +131,7 @@ public class Chatserver implements IChatserverCli, Runnable {
 	@Command
 	@Override
 	public String users() throws IOException {
-		String output = "";
+		String output = "Online Users:\n";
 		for (User user : userService.getAllUsers()) {
 			output += user.username() + " " + (user.isLoggedIn()? "online" : "offline") + "\n";
 		}

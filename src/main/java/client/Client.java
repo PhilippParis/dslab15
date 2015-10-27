@@ -66,7 +66,7 @@ public class Client implements IClientCli, Runnable {
 
 		// setup services
 		channelService = new ChannelService(executorService);
-		messageExecutorFactory = new ClientMessageExecutorFactory(userResponseStream);
+		messageExecutorFactory = new ClientMessageExecutorFactory(userResponseStream, channelService);
 		messageService = new MessageService(messageExecutorFactory, executorService);
 
 		// setup shell
@@ -153,7 +153,7 @@ public class Client implements IClientCli, Runnable {
 			return "timeout occurred; response not received";
 		}
 
-		String output = "Online users:";
+		String output = "Online users: \n";
 		for (String user : response.getOnlineUsers()) {
 			output += "* " + user + "\n";
 		}

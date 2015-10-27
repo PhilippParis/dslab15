@@ -2,6 +2,7 @@ package executors;
 
 import domain.IChannel;
 import domain.User;
+import service.IChannelService;
 import service.IUserService;
 import service.UserService;
 
@@ -12,13 +13,15 @@ import java.io.PrintStream;
  */
 public class ClientMessageExecutorFactory implements IMessageExecutorFactory {
     private PrintStream userResponseStream;
+    private IChannelService channelService;
 
-    public ClientMessageExecutorFactory(PrintStream userResponseStream) {
+    public ClientMessageExecutorFactory(PrintStream userResponseStream, IChannelService channelService) {
         this.userResponseStream = userResponseStream;
+        this.channelService = channelService;
     }
 
     @Override
     public IMessageExecutor create(IChannel channel) {
-        return new ClientMessageExecutor(userResponseStream, channel);
+        return new ClientMessageExecutor(userResponseStream, channelService, channel);
     }
 }

@@ -23,5 +23,4 @@ public class ListMessage extends UDPMessage {
         return "ListMessage{}";
     }
 
-
 }
