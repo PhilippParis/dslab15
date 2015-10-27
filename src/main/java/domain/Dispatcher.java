@@ -25,17 +25,25 @@ public class Dispatcher implements Runnable {
 
     @Override
     public void run()  {
+        LOGGER.info("Dispatcher started");
         try {
             while (true) {
                 Socket socket = serverSocket.accept();
                 channelService.addChannel(createTCPChannel(socket));
             }
+        } catch (IOException e) { }
+        LOGGER.info("Dispatcher stopped");
+    }
+
+    public IChannel createTCPChannel(Socket socket) {
+        return new TCPChannel(socket, messageService);
+    }
+
+    public void stop() {
+        try {
+            serverSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    IChannel createTCPChannel(Socket socket) {
-        return new TCPChannel(socket, messageService);
     }
 }

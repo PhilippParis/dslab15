@@ -80,6 +80,16 @@ public abstract class IChannel implements Runnable {
         } catch (IOException | ClassNotFoundException e) {
         }
         LOGGER.log(Level.INFO, "Channel stopped");
+
+        // signal all waiting threads to continue / end
+        for (Task task : tasks.values()) {
+            task.signal();
+        }
+
+        // logout user
+        if (user != null) {
+            user.setLoggedIn(false);
+        }
     }
 
     /**

@@ -31,6 +31,13 @@ public class ChannelService implements IChannelService {
     }
 
     @Override
+    public void closeAll() {
+        for (IChannel channel : channels) {
+            channel.stop();
+        }
+    }
+
+    @Override
     public Collection<IChannel> getAllChannels() {
         return channels;
     }

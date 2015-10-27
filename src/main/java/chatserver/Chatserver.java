@@ -106,6 +106,19 @@ public class Chatserver implements IChatserverCli, Runnable {
 		executorService.execute(dispatcher);
 	}
 
+	/**
+	 * shuts down the server: stops threads and closes open sockets
+	 */
+	private void shutdown() {
+		if (dispatcher != null) {
+			dispatcher.stop();
+		}
+
+		channelService.closeAll();
+		executorService.shutdown();
+		shell.close();
+	}
+
 	@Command
 	@Override
 	public String users() throws IOException {
@@ -119,8 +132,8 @@ public class Chatserver implements IChatserverCli, Runnable {
 	@Command
 	@Override
 	public String exit() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		shutdown();
+		return "exiting...";
 	}
 
 	/**

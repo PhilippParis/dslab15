@@ -23,6 +23,11 @@ public interface IChannelService {
     void closeChannel(IChannel channel);
 
     /**
+     * closes all channels
+     */
+    void closeAll();
+
+    /**
      * @return  returns all channels
      */
     Collection<IChannel> getAllChannels();

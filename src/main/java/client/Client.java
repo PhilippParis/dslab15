@@ -15,10 +15,7 @@ import cli.Command;
 import cli.Shell;
 import domain.*;
 import domain.messages.*;
-import domain.responses.AckResponse;
-import domain.responses.LoginResponse;
-import domain.responses.LookupResponse;
-import domain.responses.RegisterResponse;
+import domain.responses.*;
 import executors.ClientMessageExecutorFactory;
 import executors.IMessageExecutorFactory;
 import service.ChannelService;
@@ -114,10 +111,16 @@ public class Client implements IClientCli, Runnable {
 	}
 
 	/**
-	 * shuts down the client: logs the user out, releases resources, closes open sockets
+	 * shuts down the client: stops threads closes sockets
 	 */
 	private void shutdown() {
-		// TODO
+		if (dispatcher != null) {
+			dispatcher.stop();
+		}
+
+		channelService.closeAll();
+		executorService.shutdown();
+		shell.close();
 	}
 
 	@Command
@@ -132,16 +135,27 @@ public class Client implements IClientCli, Runnable {
 	@Override
 	public String logout() throws IOException {
 		IMessage msg = new LogoutMessage();
-		serverChannel.send(msg);
-		return null; // TODO
+		LogoutResponse response = (LogoutResponse) serverChannel.sendAndWait(msg);
+
+		if (response == null) {
+			return "timeout occurred; response not received";
+		}
+		return response.getMessage();
 	}
 
 	@Command
 	@Override
 	public String send(String message) throws IOException {
 		IMessage msg = new SendMessage(message);
-		serverChannel.send(msg);
-		return null; // TODO
+		SendResponse response = (SendResponse) serverChannel.sendAndWait(msg);
+
+		if (response == null) {
+			return "timeout occurred; response not received";
+		}
+		if (!response.isSuccessful()) {
+			return response.getMessage();
+		}
+		return null;
 	}
 
 	@Command
@@ -149,8 +163,17 @@ public class Client implements IClientCli, Runnable {
 	public String list() throws IOException {
 		UDPMessage msg = new ListMessage();
 		msg.setSocketAddress(serverUDPAddress);
-		udpChannel.send(msg);
-		return null;
+		ListResponse response = (ListResponse) udpChannel.sendAndWait(msg);
+
+		if (response == null) {
+			return "timeout occurred; response not received";
+		}
+
+		String output = "Online users:";
+		for (String user : response.getOnlineUsers()) {
+			output += "* " + user + "\n";
+		}
+		return output;
 	}
 
 	@Command
@@ -187,8 +210,13 @@ public class Client implements IClientCli, Runnable {
 	@Override
 	public String lookup(String username) throws IOException {
 		IMessage msg = new LookupMessage(username);
-		serverChannel.send(msg);
-		return null; // TODO
+		LookupResponse response = (LookupResponse) serverChannel.sendAndWait(msg);
+
+		if (response == null) {
+			return "* timeout occurred; response not received *";
+		}
+
+		return response.getHost() + ":" + response.getPort();
 	}
 
 	@Command
@@ -228,7 +256,7 @@ public class Client implements IClientCli, Runnable {
 	@Override
 	public String exit() throws IOException {
 		shutdown();
-		return "exiting";
+		return "exiting...";
 	}
 
 	/**
