@@ -17,12 +17,10 @@ import java.util.logging.Logger;
  */
 public class ServerMessageExecutor extends IMessageExecutor {
     private final static Logger LOGGER = Logger.getLogger(ServerMessageExecutor.class.getName());
-    private IChannelService channelService;
     private IUserService userService;
     private IChannel channel;
 
-    public ServerMessageExecutor(IChannelService channelService, IUserService userService, IChannel channel) {
-        this.channelService = channelService;
+    public ServerMessageExecutor(IUserService userService, IChannel channel) {
         this.userService = userService;
         this.channel = channel;
     }
@@ -52,7 +50,6 @@ public class ServerMessageExecutor extends IMessageExecutor {
                 // successfully logged in
                 user.setLoggedIn(true);
                 userService.addUser(user);
-                channel.setUser(user);
 
                 response.setSuccessful(true);
                 response.setMessage("Successfully logged in");
@@ -75,12 +72,15 @@ public class ServerMessageExecutor extends IMessageExecutor {
         LogoutResponse response = new LogoutResponse();
         response.setId(message.getId());
 
-        if (channel.user() == null || !channel.user().isLoggedIn()) {
+        // get user
+        User user = userService.getUser(channel);
+
+        if (user == null || !user.isLoggedIn()) {
             // user not logged in
             response.setSuccessful(false);
             response.setMessage("currently not logged in");
         } else {
-            channel.user().setLoggedIn(false);
+            user.setLoggedIn(false);
 
             response.setSuccessful(true);
             response.setMessage("Successfully logged out");
@@ -98,8 +98,11 @@ public class ServerMessageExecutor extends IMessageExecutor {
         SendResponse response = new SendResponse();
         response.setId(message.getId());
 
+        // get user
+        User user = userService.getUser(channel);
+
         // check if user is logged in
-        if (channel.user() == null || !channel.user().isLoggedIn()) {
+        if (user == null || !user.isLoggedIn()) {
             // user not logged in
             response.setMessage("sending message failed: not logged in");
             response.setSuccessful(false);
@@ -109,12 +112,12 @@ public class ServerMessageExecutor extends IMessageExecutor {
             response.setSuccessful(true);
 
             // create new send message with sender name
-            SendMessage msg = new SendMessage(channel.user().username() + ": " + message.getText());
+            SendMessage msg = new SendMessage(user.username() + ": " + message.getText());
 
             // send msg to all other users
-            for (User user : userService.getAllUsers()) {
-                if (!user.equals(channel.user())) {
-                    user.channel().send(msg);
+            for (User other : userService.getAllUsers()) {
+                if (!other.equals(user)) {
+                    other.channel().send(msg);
                 }
             }
         }
@@ -131,16 +134,19 @@ public class ServerMessageExecutor extends IMessageExecutor {
         RegisterResponse response = new RegisterResponse();
         response.setId(message.getId());
 
-        if (channel.user() == null || !channel.user().isLoggedIn()) {
+        // get user
+        User user = userService.getUser(channel);
+
+        if (user == null || !user.isLoggedIn()) {
             // user not logged in
             response.setSuccessful(false);
             response.setMessage("Register failed: not logged in");
         } else {
             response.setSuccessful(true);
-            response.setMessage("Successfully registered address for " + channel.user().username());
+            response.setMessage("Successfully registered address for " + user.username());
 
             // register address
-            channel.user().setPrivateAddress(message.getHost(), message.getPort());
+            user.setPrivateAddress(message.getHost(), message.getPort());
         }
 
         // send response
@@ -158,7 +164,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
         // get user
         User user = userService.getUser(message.getUsername());
 
-        if (channel.user() == null || !channel.user().isLoggedIn() ||
+        if (user == null || !user.isLoggedIn() ||
                 user == null || !user.isLoggedIn() || !user.privateAddressRegistered()) {
             // user not logged in or user not found / address not registered
             response.setSuccessful(false);

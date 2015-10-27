@@ -1,5 +1,6 @@
 package service;
 
+import channels.IChannel;
 import domain.User;
 
 import java.util.Collection;
@@ -30,6 +31,12 @@ public interface IUserService {
      *          if no user with this username was found
      */
     User getUser(String username);
+
+    /**
+     * @param channel connection channel
+     * @return returns the user for the specified channel
+     */
+    public User getUser(IChannel channel);
 
     /**
      * @return  all users

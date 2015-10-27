@@ -17,7 +17,6 @@ import java.util.logging.Logger;
  */
 public abstract class IChannel implements Runnable {
     private final static Logger LOGGER = Logger.getLogger(IChannel.class.getName());
-    private User user;
     private AtomicLong messageID = new AtomicLong();
     private ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<Long, Task>();
     protected IMessageService messageService;
@@ -70,7 +69,6 @@ public abstract class IChannel implements Runnable {
         LOGGER.log(Level.INFO, "Channel started");
         try {
             while(true) {
-
                 IMessage response = read();
 
                 if (tasks.containsKey(response.getId())) {
@@ -91,27 +89,6 @@ public abstract class IChannel implements Runnable {
         for (Task task : tasks.values()) {
             task.signal();
         }
-
-        // logout user
-        if (user != null) {
-            user.setLoggedIn(false);
-        }
-    }
-
-    /**
-     * @return  returns the user associated with this channel.
-     *          null if no user logged in via this channel
-     */
-    public User user() {
-        return user;
-    }
-
-    /**
-     * sets the user
-     * @param user user
-     */
-    public void setUser(User user) {
-        this.user = user;
     }
 
     /**

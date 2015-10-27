@@ -64,7 +64,7 @@ public class Chatserver implements IChatserverCli, Runnable {
 		// setup services
 		userService = new UserService(new Config("user"));
 		channelService = new ChannelService(executorService);
-		messageExecutorFactory = new ServerMessageExecutorFactory(channelService, userService);
+		messageExecutorFactory = new ServerMessageExecutorFactory(userService);
 		messageService = new MessageService(messageExecutorFactory, executorService);
 
 		// setup shell

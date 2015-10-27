@@ -1,5 +1,6 @@
 package service;
 
+import channels.IChannel;
 import domain.User;
 import util.Config;
 
@@ -37,6 +38,15 @@ public class UserService implements IUserService {
         }
 
         return false;
+    }
+
+    public User getUser(IChannel channel) {
+        for (User user : users.values()) {
+            if (user.channel().equals(channel)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     @Override
