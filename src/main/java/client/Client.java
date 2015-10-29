@@ -18,7 +18,9 @@ import domain.*;
 import domain.messages.*;
 import domain.responses.*;
 import executors.IMessageExecutorFactory;
+import service.ClientService;
 import service.ConnectionService;
+import service.IClientService;
 import service.IConnectionService;
 import util.Config;
 
@@ -43,6 +45,7 @@ public class Client implements IClientCli, Runnable {
 	// services
 	private IConnectionService connectionService;
 	private IMessageExecutorFactory messageExecutorFactory;
+	private IClientService clientService;
 
 	/**
 	 * @param componentName
@@ -63,7 +66,8 @@ public class Client implements IClientCli, Runnable {
 
 		// setup services
 		connectionService = new ConnectionService(executorService);
-		messageExecutorFactory = new ClientMessageExecutorFactory(userResponseStream, connectionService);
+		clientService = new ClientService();
+		messageExecutorFactory = new ClientMessageExecutorFactory(userResponseStream, connectionService, clientService);
 		connectionService.setMessageExecutorFactory(messageExecutorFactory);
 
 		// setup shell
@@ -107,6 +111,8 @@ public class Client implements IClientCli, Runnable {
 
 		try {
 			LoginResponse response = (LoginResponse) connectionService.sendAndWait(msg, serverChannel);
+			clientService.setUsername(username);
+			clientService.setLoggedIn(true);
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
@@ -122,6 +128,7 @@ public class Client implements IClientCli, Runnable {
 
 		try {
 			LogoutResponse response = (LogoutResponse) connectionService.sendAndWait(msg, serverChannel);
+			clientService.setLoggedIn(false);
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
@@ -174,7 +181,7 @@ public class Client implements IClientCli, Runnable {
 	@Command
 	@Override
 	public String msg(String username, String message) throws IOException {
-		PrivateMessage privateMessage = new PrivateMessage(username, message);
+		PrivateMessage privateMessage = new PrivateMessage(username, clientService.username(), message);
 
 		// do lookup
 		LookupMessage lookupMessage = new LookupMessage(username);
@@ -231,27 +238,36 @@ public class Client implements IClientCli, Runnable {
 	@Override
 	public String register(String privateAddress) throws IOException {
 		String[] input = privateAddress.split(":");
+		if (input.length < 2) {
+			return "invalid address format";
+		}
+
 		RegisterMessage msg = new RegisterMessage(input[0], Integer.valueOf(input[1]));
+
+		// try to start tcp server
+		try {
+			ServerSocket serverSocket = new ServerSocket(msg.getPort());
+			dispatcher = new Dispatcher(connectionService, serverSocket);
+			executorService.execute(dispatcher);
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, "error creating server socket");
+			return "error creating server socket";
+		}
+
 		RegisterResponse response = null;
 
 		try {
 			response = (RegisterResponse) connectionService.sendAndWait(msg, serverChannel);
 		} catch (TimeoutException e) {
+			dispatcher.stop();
 			return "timeout occurred: Server not reachable";
 		} catch (ClassCastException e) {
+			dispatcher.stop();
 			return "unexpected response received";
 		}
 
-		if (response.isSuccessful()) {
-			// start tcp server and wait for incoming messages
-			try {
-				ServerSocket serverSocket = new ServerSocket(msg.getPort());
-				dispatcher = new Dispatcher(connectionService, serverSocket);
-				executorService.execute(dispatcher);
-			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, "error creating server socket (TCP)");
-				e.printStackTrace();
-			}
+		if (!response.isSuccessful()) {
+			dispatcher.stop();
 		}
 
 		return response.getMessage();
@@ -260,7 +276,15 @@ public class Client implements IClientCli, Runnable {
 	@Command
 	@Override
 	public String lastMsg() throws IOException {
-		// TODO Auto-generated method stub
+		try {
+			SendMessage message = (SendMessage) clientService.lastMessage();
+			if (message != null) {
+				return message.getText();
+			}
+		} catch (ClassCastException e) {
+			return null;
+		}
+
 		return null;
 	}
 

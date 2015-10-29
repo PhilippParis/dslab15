@@ -114,7 +114,11 @@ public class ServerMessageExecutor extends IMessageExecutor {
             SendMessage msg = new SendMessage(user.username() + ": " + message.getText());
 
             // forward message to other clients
-            connectionService.forward(msg, channel);
+            for (User otherUser : userService.getAllUsers()) {
+                if (!otherUser.equals(user)) {
+                    connectionService.send(msg, otherUser.channel());
+                }
+            }
         }
 
         // send response to sender

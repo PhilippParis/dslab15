@@ -4,6 +4,7 @@ import channels.IChannel;
 import domain.messages.*;
 import domain.responses.*;
 import executors.IMessageExecutor;
+import service.IClientService;
 import service.IConnectionService;
 
 import java.io.PrintStream;
@@ -16,11 +17,13 @@ public class ClientMessageExecutor extends IMessageExecutor {
     private final static Logger LOGGER = Logger.getLogger(ClientMessageExecutor.class.getName());
     private PrintStream userResponseStream;
     private IConnectionService connectionService;
+    private IClientService clientService;
     private IChannel channel;
 
-    public ClientMessageExecutor(PrintStream userResponseStream, IConnectionService connectionService, IChannel channel) {
+    public ClientMessageExecutor(PrintStream userResponseStream, IConnectionService connectionService, IClientService clientService, IChannel channel) {
         this.userResponseStream = userResponseStream;
         this.connectionService = connectionService;
+        this.clientService = clientService;
         this.channel = channel;
     }
 
@@ -28,12 +31,13 @@ public class ClientMessageExecutor extends IMessageExecutor {
     public void executeSendMessage(SendMessage message) {
         LOGGER.info("message received: " + message.toString());
         userResponseStream.println(message.getText());
+        clientService.setLastMessage(message);
     }
 
     @Override
     public void executePrivateMessage(PrivateMessage message) {
         LOGGER.info("message received: " + message.toString());
-        userResponseStream.println(message.getText());
+        userResponseStream.println(message.getSender() + ": " + message.getText());
 
         AckResponse response = new AckResponse();
         response.setId(message.getId());

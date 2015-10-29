@@ -8,10 +8,12 @@ import executors.IMessageExecutor;
  */
 public class PrivateMessage extends IMessage {
     private String receiver;
+    private String sender;
     private String text;
 
-    public PrivateMessage(String receiver, String text) {
+    public PrivateMessage(String receiver, String sender, String text) {
         this.receiver = receiver;
+        this.sender = sender;
         this.text = text;
     }
 
@@ -28,10 +30,15 @@ public class PrivateMessage extends IMessage {
         return text;
     }
 
+    public String getSender() {
+        return sender;
+    }
+
     @Override
     public String toString() {
         return "PrivateMessage{" +
                 "receiver='" + receiver + '\'' +
+                ", sender='" + sender + '\'' +
                 ", text='" + text + '\'' +
                 '}';
     }
