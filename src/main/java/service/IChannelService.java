@@ -1,6 +1,7 @@
 package service;
 
 import channels.IChannel;
+import channels.OnCloseListener;
 
 import java.util.Collection;
 
@@ -31,4 +32,6 @@ public interface IChannelService {
      * @return  returns all channels
      */
     Collection<IChannel> getAllChannels();
+
+    void setOnChannelCloseListener(OnCloseListener onCloseListener);
 }

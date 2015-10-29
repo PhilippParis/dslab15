@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import channels.OnCloseListener;
 import cli.Command;
 import cli.Shell;
 import channels.Dispatcher;
@@ -64,6 +65,13 @@ public class Chatserver implements IChatserverCli, Runnable {
 		// setup services
 		userService = new UserService(new Config("user"));
 		channelService = new ChannelService(executorService);
+		channelService.setOnChannelCloseListener(new OnCloseListener() {
+			@Override
+			public void onClose(IChannel channel) {
+				userService.logoutUser(userService.getUser(channel));
+			}
+		});
+
 		messageExecutorFactory = new ServerMessageExecutorFactory(userService);
 		messageService = new MessageService(messageExecutorFactory, executorService);
 

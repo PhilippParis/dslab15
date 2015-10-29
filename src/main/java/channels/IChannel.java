@@ -2,7 +2,6 @@ package channels;
 
 import domain.IMessage;
 import domain.Task;
-import domain.User;
 import exceptions.UnexpectedResponseException;
 import service.IMessageService;
 
@@ -100,7 +99,7 @@ public abstract class IChannel implements Runnable {
 
         // call listeners
         for (OnCloseListener listener : listeners) {
-            listener.onClose();
+            listener.onClose(this);
         }
     }
 

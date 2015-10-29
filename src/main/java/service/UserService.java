@@ -54,17 +54,29 @@ public class UserService implements IUserService {
         return users.get(username);
     }
 
-    public boolean authenticate(User user, String password) {
+    public boolean loginUser(User user, String password) {
         if (user == null || password == null) {
             return false;
         }
 
+        boolean success = false;
+
         try {
-            return loginConfig.getString(user.username() + ".password").equals(password);
+            success = loginConfig.getString(user.username() + ".password").equals(password);
         } catch (MissingResourceException e) {
-            // wrong username
             return false;
         }
+
+        if (success) {
+            users.put(user.username(), user);
+            user.setLoggedIn(true);
+        }
+        return success;
+    }
+
+    @Override
+    public void logoutUser(User user) {
+        user.setLoggedIn(false);
     }
 
     @Override

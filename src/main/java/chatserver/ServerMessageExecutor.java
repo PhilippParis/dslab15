@@ -46,11 +46,8 @@ public class ServerMessageExecutor extends IMessageExecutor {
             }
 
             // authenticate user
-            if (userService.authenticate(user, message.getPassword())) {
+            if (userService.loginUser(user, message.getPassword())) {
                 // successfully logged in
-                user.setLoggedIn(true);
-                userService.addUser(user);
-
                 response.setSuccessful(true);
                 response.setMessage("Successfully logged in");
             } else {

@@ -48,5 +48,8 @@ public interface IUserService {
      * @param key authentication key
      * @return true if the user was successfully authenticated
      */
-    boolean authenticate(User user, String key);
+    boolean loginUser(User user, String key);
+
+    void logoutUser(User user);
+
 }
