@@ -5,6 +5,7 @@ import domain.User;
 import domain.messages.*;
 import domain.responses.*;
 import executors.IMessageExecutor;
+import service.IConnectionService;
 import service.IUserService;
 
 import java.net.InetSocketAddress;
@@ -17,9 +18,10 @@ import java.util.logging.Logger;
 public class ServerMessageExecutor extends IMessageExecutor {
     private final static Logger LOGGER = Logger.getLogger(ServerMessageExecutor.class.getName());
     private IUserService userService;
+    private IConnectionService connectionService;
     private IChannel channel;
 
-    public ServerMessageExecutor(IUserService userService, IChannel channel) {
+    public ServerMessageExecutor(IUserService userService, IConnectionService connectionService, IChannel channel) {
         this.userService = userService;
         this.channel = channel;
     }
@@ -57,7 +59,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
         }
 
         // send response
-        channel.send(response);
+        connectionService.send(response, channel);
     }
 
     @Override
@@ -83,7 +85,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
         }
 
         // send response
-        channel.send(response);
+        connectionService.send(response, channel);
     }
 
     @Override
@@ -110,16 +112,12 @@ public class ServerMessageExecutor extends IMessageExecutor {
             // create new send message with sender name
             SendMessage msg = new SendMessage(user.username() + ": " + message.getText());
 
-            // send msg to all other users
-            for (User other : userService.getAllUsers()) {
-                if (!other.equals(user)) {
-                    other.channel().send(msg);
-                }
-            }
+            // forward message to other clients
+            connectionService.forward(msg, channel);
         }
 
         // send response to sender
-        channel.send(response);
+        connectionService.send(response, channel);
     }
 
     @Override
@@ -146,7 +144,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
         }
 
         // send response
-        channel.send(response);
+        connectionService.send(response, channel);
     }
 
     @Override
@@ -172,7 +170,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
         }
 
         // send response
-        channel.send(response);
+        connectionService.send(response, channel);
     }
 
     @Override
@@ -194,6 +192,8 @@ public class ServerMessageExecutor extends IMessageExecutor {
 
         response.setSocketAddress(message.getSocketAddress());
         response.setOnlineUsers(users);
-        channel.send(response);
+
+        // send response
+        connectionService.send(response, channel);
     }
 }

@@ -15,12 +15,12 @@ import java.util.logging.Logger;
 public class ClientMessageExecutor extends IMessageExecutor {
     private final static Logger LOGGER = Logger.getLogger(ClientMessageExecutor.class.getName());
     private PrintStream userResponseStream;
-    private IConnectionService channelService;
+    private IConnectionService connectionService;
     private IChannel channel;
 
-    public ClientMessageExecutor(PrintStream userResponseStream, IConnectionService channelService, IChannel channel) {
+    public ClientMessageExecutor(PrintStream userResponseStream, IConnectionService connectionService, IChannel channel) {
         this.userResponseStream = userResponseStream;
-        this.channelService = channelService;
+        this.connectionService = connectionService;
         this.channel = channel;
     }
 
@@ -37,9 +37,11 @@ public class ClientMessageExecutor extends IMessageExecutor {
 
         AckResponse response = new AckResponse();
         response.setId(message.getId());
-        channel.send(response);
+
+        // send response
+        connectionService.send(response, channel);
 
         // stop channel
-        channelService.closeChannel(channel);
+        connectionService.closeChannel(channel);
     }
 }

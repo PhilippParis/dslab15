@@ -105,7 +105,7 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new LoginMessage(username, password);
 
 		try {
-			LoginResponse response = (LoginResponse) serverChannel.sendAndWait(msg);
+			LoginResponse response = (LoginResponse) connectionService.sendAndWait(msg, serverChannel);
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
@@ -120,7 +120,7 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new LogoutMessage();
 
 		try {
-			LogoutResponse response = (LogoutResponse) serverChannel.sendAndWait(msg);
+			LogoutResponse response = (LogoutResponse) connectionService.sendAndWait(msg, serverChannel);
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
@@ -135,7 +135,7 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new SendMessage(message);
 
 		try {
-			SendResponse response = (SendResponse) serverChannel.sendAndWait(msg);
+			SendResponse response = (SendResponse) connectionService.sendAndWait(msg, serverChannel);
 			if (!response.isSuccessful()) {
 				return response.getMessage();
 			}
@@ -156,7 +156,7 @@ public class Client implements IClientCli, Runnable {
 		ListResponse response = null;
 
 		try {
-			response = (ListResponse) udpChannel.sendAndWait(msg);
+			response = (ListResponse) connectionService.sendAndWait(msg, udpChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
 		} catch (ClassCastException e) {
@@ -179,7 +179,7 @@ public class Client implements IClientCli, Runnable {
 		LookupMessage lookupMessage = new LookupMessage(username);
 		LookupResponse response = null;
 		try {
-			response = (LookupResponse) serverChannel.sendAndWait(lookupMessage);
+			response = (LookupResponse) connectionService.sendAndWait(lookupMessage, serverChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
 		} catch (ClassCastException e) {
@@ -197,7 +197,7 @@ public class Client implements IClientCli, Runnable {
 
 		// send private message and wait for acknowledge
 		try {
-			privateChannel.sendAndWait(privateMessage);
+			connectionService.sendAndWait(privateMessage, privateChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
 		} catch (ClassCastException e) {
@@ -216,7 +216,7 @@ public class Client implements IClientCli, Runnable {
 		LookupResponse response = null;
 
 		try {
-			response = (LookupResponse) serverChannel.sendAndWait(msg);
+			response = (LookupResponse) connectionService.sendAndWait(msg, serverChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
 		} catch (ClassCastException e) {
@@ -234,7 +234,7 @@ public class Client implements IClientCli, Runnable {
 		RegisterResponse response = null;
 
 		try {
-			response = (RegisterResponse) serverChannel.sendAndWait(msg);
+			response = (RegisterResponse) connectionService.sendAndWait(msg, serverChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
 		} catch (ClassCastException e) {

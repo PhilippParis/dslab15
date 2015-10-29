@@ -76,8 +76,17 @@ public class ConnectionService implements IConnectionService {
     }
 
     @Override
-    public void sendAndWait(IMessage message, IChannel channel) throws TimeoutException {
-        channel.sendAndWait(message);
+    public void forward(IMessage message, IChannel sender) {
+        for (IChannel channel : channels) {
+            if (!channel.equals(sender)) {
+                send(message, channel);
+            }
+        }
+    }
+
+    @Override
+    public IMessage sendAndWait(IMessage message, IChannel channel) throws TimeoutException {
+        return channel.sendAndWait(message);
     }
 
     public byte[] encode(IMessage message) throws IOException {
