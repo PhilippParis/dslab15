@@ -37,7 +37,7 @@ public class UDPChannel extends IChannel {
     }
 
     @Override
-    public IMessage read() throws IOException, ClassNotFoundException {
+    protected IMessage read() throws IOException, ClassNotFoundException {
         byte[] buffer = new byte[1024];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         socket.receive(packet);

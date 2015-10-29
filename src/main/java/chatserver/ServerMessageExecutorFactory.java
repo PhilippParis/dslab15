@@ -3,6 +3,7 @@ package chatserver;
 import channels.IChannel;
 import executors.IMessageExecutor;
 import executors.IMessageExecutorFactory;
+import service.IConnectionService;
 import service.IUserService;
 
 /**
@@ -10,13 +11,15 @@ import service.IUserService;
  */
 public class ServerMessageExecutorFactory implements IMessageExecutorFactory {
     private IUserService userService;
+    private IConnectionService connectionService;
 
-    public ServerMessageExecutorFactory(IUserService userService) {
+    public ServerMessageExecutorFactory(IUserService userService, IConnectionService connectionService) {
         this.userService = userService;
+        this.connectionService = connectionService;
     }
 
     @Override
     public IMessageExecutor create(IChannel channel) {
-        return new ServerMessageExecutor(userService, channel);
+        return new ServerMessageExecutor(userService, connectionService, channel);
     }
 }

@@ -62,8 +62,9 @@ public class Client implements IClientCli, Runnable {
 		this.userResponseStream = userResponseStream;
 
 		// setup services
-		connectionService = new ConnectionService(executorService, messageExecutorFactory);
+		connectionService = new ConnectionService(executorService);
 		messageExecutorFactory = new ClientMessageExecutorFactory(userResponseStream, connectionService);
+		connectionService.setMessageExecutorFactory(messageExecutorFactory);
 
 		// setup shell
 		shell = new Shell(componentName, userRequestStream, userResponseStream);

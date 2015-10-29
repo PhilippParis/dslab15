@@ -63,15 +63,16 @@ public class Chatserver implements IChatserverCli, Runnable {
 
 		// setup services
 		userService = new UserService(new Config("user"));
-		connectionService = new ConnectionService(executorService, messageExecutorFactory);
+		connectionService = new ConnectionService(executorService);
+		messageExecutorFactory = new ServerMessageExecutorFactory(userService, connectionService);
+
+		connectionService.setMessageExecutorFactory(messageExecutorFactory);
 		connectionService.setOnChannelCloseListener(new OnCloseListener() {
 			@Override
 			public void onClose(IChannel channel) {
 				userService.logoutUser(userService.getUser(channel));
 			}
 		});
-
-		messageExecutorFactory = new ServerMessageExecutorFactory(userService);
 
 		// setup shell
 		shell = new Shell(componentName, userRequestStream, userResponseStream);

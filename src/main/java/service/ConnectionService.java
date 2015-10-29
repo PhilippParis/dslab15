@@ -20,8 +20,11 @@ public class ConnectionService implements IConnectionService {
     private OnCloseListener onCloseListener;
     private IMessageExecutorFactory factory;
 
-    public ConnectionService(ExecutorService executorService, IMessageExecutorFactory factory) {
+    public ConnectionService(ExecutorService executorService) {
         this.executorService = executorService;
+    }
+
+    public void setMessageExecutorFactory(IMessageExecutorFactory factory) {
         this.factory = factory;
     }
 

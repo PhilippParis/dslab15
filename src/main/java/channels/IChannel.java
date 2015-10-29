@@ -32,7 +32,13 @@ public abstract class IChannel implements Runnable {
      */
     public abstract void send(IMessage message);
 
-    public abstract IMessage read() throws IOException, ClassNotFoundException;
+    /**
+     *
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    protected abstract IMessage read() throws IOException, ClassNotFoundException;
 
     /**
      * sends the message and waits for a response

@@ -32,7 +32,7 @@ public class TCPChannel extends IChannel {
     }
 
     @Override
-    public IMessage read() throws IOException, ClassNotFoundException {
+    protected IMessage read() throws IOException, ClassNotFoundException {
         byte[] buffer = new byte[1024];
         socket.getInputStream().read(buffer);
         return connectionService.decode(buffer);

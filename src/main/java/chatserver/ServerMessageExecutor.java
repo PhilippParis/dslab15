@@ -23,6 +23,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
 
     public ServerMessageExecutor(IUserService userService, IConnectionService connectionService, IChannel channel) {
         this.userService = userService;
+        this.connectionService = connectionService;
         this.channel = channel;
     }
 

@@ -12,15 +12,15 @@ import java.io.PrintStream;
  */
 public class ClientMessageExecutorFactory implements IMessageExecutorFactory {
     private PrintStream userResponseStream;
-    private IConnectionService channelService;
+    private IConnectionService connectionService;
 
-    public ClientMessageExecutorFactory(PrintStream userResponseStream, IConnectionService channelService) {
+    public ClientMessageExecutorFactory(PrintStream userResponseStream, IConnectionService connectionService) {
         this.userResponseStream = userResponseStream;
-        this.channelService = channelService;
+        this.connectionService = connectionService;
     }
 
     @Override
     public IMessageExecutor create(IChannel channel) {
-        return new ClientMessageExecutor(userResponseStream, channelService, channel);
+        return new ClientMessageExecutor(userResponseStream, connectionService, channel);
     }
 }

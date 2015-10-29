@@ -3,6 +3,7 @@ package service;
 import channels.IChannel;
 import channels.OnCloseListener;
 import domain.IMessage;
+import executors.IMessageExecutorFactory;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -13,6 +14,12 @@ import java.util.concurrent.TimeoutException;
  * Created by phili on 10/20/15.
  */
 public interface IConnectionService {
+
+    /**
+     * sets the MessageExecutorFactory
+     * @param factory factory which creates executors for received messages
+     */
+    void setMessageExecutorFactory(IMessageExecutorFactory factory);
 
     /**
      * adds the channel and starts the execution in a thread
