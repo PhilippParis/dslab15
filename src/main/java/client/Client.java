@@ -293,6 +293,9 @@ public class Client implements IClientCli, Runnable {
 	public String exit() throws IOException {
 		LOGGER.info("shutdown client");
 
+		// disable new task from being submitted
+		executorService.shutdown();
+
 		// streams
 		userResponseStream.close();
 		try {
@@ -306,10 +309,27 @@ public class Client implements IClientCli, Runnable {
 			dispatcher.stop();
 		}
 
+		// close all connections
 		connectionService.closeAll();
+
+		// close shell
 		shell.close();
-		executorService.shutdown();
-		return null;
+
+		try {
+			// wait for all task to terminate
+			if(!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+				// cancel currently running task
+                executorService.shutdownNow();
+				// wait for task to be canceled
+				if(!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+					System.err.println("ExecutorService did not terminate");
+				}
+            }
+		} catch (InterruptedException e) {
+			executorService.shutdownNow();
+		}
+
+		return "exiting...";
 	}
 
 	/**

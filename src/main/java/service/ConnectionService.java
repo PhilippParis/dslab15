@@ -30,6 +30,10 @@ public class ConnectionService implements IConnectionService {
 
     @Override
     public void addChannel(IChannel channel) {
+        if (channel == null) {
+            return;
+        }
+
         channels.add(channel);
         channel.addOnCloseListener(onCloseListener);
 
@@ -39,6 +43,10 @@ public class ConnectionService implements IConnectionService {
 
     @Override
     public void closeChannel(IChannel channel) {
+        if (channel == null) {
+            return;
+        }
+
         channels.remove(channel);
         channel.stop();
     }
@@ -75,11 +83,18 @@ public class ConnectionService implements IConnectionService {
 
     @Override
     public void send(IMessage message, IChannel channel) {
+        if (message == null || channel == null) {
+            return;
+        }
         channel.send(message);
     }
 
     @Override
     public void forward(IMessage message, IChannel sender) {
+        if (sender == null || message == null) {
+            return;
+        }
+
         for (IChannel channel : channels) {
             if (!channel.equals(sender)) {
                 send(message, channel);
@@ -89,7 +104,10 @@ public class ConnectionService implements IConnectionService {
 
     @Override
     public IMessage sendAndWait(IMessage message, IChannel channel) throws TimeoutException {
-        return channel.sendAndWait(message);
+        if (message != null && channel != null) {
+            return channel.sendAndWait(message);
+        }
+        return null;
     }
 
     public byte[] encode(IMessage message) throws IOException {

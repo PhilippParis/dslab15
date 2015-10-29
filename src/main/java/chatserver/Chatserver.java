@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -111,28 +112,6 @@ public class Chatserver implements IChatserverCli, Runnable {
 		executorService.execute(dispatcher);
 	}
 
-	/**
-	 * shuts down the server: stops threads and closes open sockets
-	 */
-	private void shutdown() {
-		// streams
-		userResponseStream.close();
-		try {
-			userRequestStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// threads / sockets
-		if (dispatcher != null) {
-			dispatcher.stop();
-		}
-
-		connectionService.closeAll();
-		executorService.shutdown();
-		shell.close();
-	}
-
 	@Command
 	@Override
 	public String users() throws IOException {
@@ -146,7 +125,44 @@ public class Chatserver implements IChatserverCli, Runnable {
 	@Command
 	@Override
 	public String exit() throws IOException {
-		shutdown();
+		LOGGER.info("shutdown server");
+
+		// disable new task from being submitted
+		executorService.shutdown();
+
+		// streams
+		userResponseStream.close();
+		try {
+			userRequestStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// threads / sockets
+		if (dispatcher != null) {
+			dispatcher.stop();
+		}
+
+		// close all connections
+		connectionService.closeAll();
+
+		// close shell
+		shell.close();
+
+		try {
+			// wait for all task to terminate
+			if(!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+				// cancel currently running task
+				executorService.shutdownNow();
+				// wait for task to be canceled
+				if(!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
+					System.err.println("ExecutorService did not terminate");
+				}
+			}
+		} catch (InterruptedException e) {
+			executorService.shutdownNow();
+		}
+
 		return "exiting...";
 	}
 

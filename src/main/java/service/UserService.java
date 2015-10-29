@@ -76,7 +76,9 @@ public class UserService implements IUserService {
 
     @Override
     public void logoutUser(User user) {
-        user.setLoggedIn(false);
+        if (user != null) {
+            user.setLoggedIn(false);
+        }
     }
 
     @Override
