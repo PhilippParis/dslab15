@@ -2,7 +2,6 @@ package channels;
 
 import domain.IMessage;
 import domain.Task;
-import exceptions.UnexpectedResponseException;
 import service.IMessageService;
 
 import java.io.IOException;
@@ -44,7 +43,7 @@ public abstract class IChannel implements Runnable {
      * @param message message to send
      * @return response (can be null if timeout occurred)
      */
-    public <ResponseType extends IMessage> ResponseType sendAndWait(IMessage message) throws TimeoutException, UnexpectedResponseException {
+    public IMessage sendAndWait(IMessage message) throws TimeoutException {
         // create unique message id
         long id = messageID.incrementAndGet();
 
@@ -64,11 +63,7 @@ public abstract class IChannel implements Runnable {
         // remove task and return response
         tasks.remove(id);
 
-        try {
-            return (ResponseType) task.getResponse();
-        } catch (ClassCastException e) {
-            throw new UnexpectedResponseException(e);
-        }
+        return task.getResponse();
     }
 
     @Override
@@ -104,7 +99,9 @@ public abstract class IChannel implements Runnable {
     }
 
     public void addOnCloseListener(OnCloseListener listener) {
-        listeners.add(listener);
+        if (listener != null) {
+            listeners.add(listener);
+        }
     }
 
     /**

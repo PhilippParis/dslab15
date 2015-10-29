@@ -17,7 +17,6 @@ import cli.Shell;
 import domain.*;
 import domain.messages.*;
 import domain.responses.*;
-import exceptions.UnexpectedResponseException;
 import executors.IMessageExecutorFactory;
 import service.ChannelService;
 import service.IChannelService;
@@ -110,11 +109,11 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new LoginMessage(username, password);
 
 		try {
-			LoginResponse response = serverChannel.sendAndWait(msg);
+			LoginResponse response = (LoginResponse) serverChannel.sendAndWait(msg);
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (UnexpectedResponseException e) {
+		} catch (ClassCastException e) {
 			return "Unexpected response received";
 		}
 	}
@@ -125,11 +124,11 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new LogoutMessage();
 
 		try {
-			LogoutResponse response = serverChannel.sendAndWait(msg);
+			LogoutResponse response = (LogoutResponse) serverChannel.sendAndWait(msg);
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (UnexpectedResponseException e) {
+		} catch (ClassCastException e) {
 			return "Unexpected response received";
 		}
 	}
@@ -140,13 +139,13 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new SendMessage(message);
 
 		try {
-			SendResponse response = serverChannel.sendAndWait(msg);
+			SendResponse response = (SendResponse) serverChannel.sendAndWait(msg);
 			if (!response.isSuccessful()) {
 				return response.getMessage();
 			}
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (UnexpectedResponseException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 
@@ -161,10 +160,10 @@ public class Client implements IClientCli, Runnable {
 		ListResponse response = null;
 
 		try {
-			response = udpChannel.sendAndWait(msg);
+			response = (ListResponse) udpChannel.sendAndWait(msg);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (UnexpectedResponseException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 
@@ -184,10 +183,10 @@ public class Client implements IClientCli, Runnable {
 		LookupMessage lookupMessage = new LookupMessage(username);
 		LookupResponse response = null;
 		try {
-			response = serverChannel.sendAndWait(lookupMessage);
+			response = (LookupResponse) serverChannel.sendAndWait(lookupMessage);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (UnexpectedResponseException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 
@@ -205,7 +204,7 @@ public class Client implements IClientCli, Runnable {
 			privateChannel.sendAndWait(privateMessage);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (UnexpectedResponseException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 
@@ -221,10 +220,10 @@ public class Client implements IClientCli, Runnable {
 		LookupResponse response = null;
 
 		try {
-			response = serverChannel.sendAndWait(msg);
+			response = (LookupResponse) serverChannel.sendAndWait(msg);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (UnexpectedResponseException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 
@@ -239,10 +238,10 @@ public class Client implements IClientCli, Runnable {
 		RegisterResponse response = null;
 
 		try {
-			response = serverChannel.sendAndWait(msg);
+			response = (RegisterResponse) serverChannel.sendAndWait(msg);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (UnexpectedResponseException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 

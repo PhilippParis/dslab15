@@ -12,7 +12,8 @@ import java.util.Collection;
 public interface IChannelService {
 
     /**
-     * adds the channel and starts the execution an a thread
+     * adds the channel and starts the execution in a thread
+     * if the onCloseListener was set previously, the listener is added to this channel
      * @param channel   channel to add
      */
     void addChannel(IChannel channel);
