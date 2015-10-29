@@ -4,7 +4,7 @@ import channels.IChannel;
 import domain.messages.*;
 import domain.responses.*;
 import executors.IMessageExecutor;
-import service.IChannelService;
+import service.IConnectionService;
 
 import java.io.PrintStream;
 import java.util.logging.Logger;
@@ -15,10 +15,10 @@ import java.util.logging.Logger;
 public class ClientMessageExecutor extends IMessageExecutor {
     private final static Logger LOGGER = Logger.getLogger(ClientMessageExecutor.class.getName());
     private PrintStream userResponseStream;
-    private IChannelService channelService;
+    private IConnectionService channelService;
     private IChannel channel;
 
-    public ClientMessageExecutor(PrintStream userResponseStream, IChannelService channelService, IChannel channel) {
+    public ClientMessageExecutor(PrintStream userResponseStream, IConnectionService channelService, IChannel channel) {
         this.userResponseStream = userResponseStream;
         this.channelService = channelService;
         this.channel = channel;

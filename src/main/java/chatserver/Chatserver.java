@@ -36,9 +36,8 @@ public class Chatserver implements IChatserverCli, Runnable {
 
 	// services
 	private IUserService userService;
-	private IChannelService channelService;
+	private IConnectionService connectionService;
 	private Dispatcher dispatcher;
-	private IMessageService messageService;
 	private IMessageExecutorFactory messageExecutorFactory;
 
 	// connection
@@ -64,8 +63,8 @@ public class Chatserver implements IChatserverCli, Runnable {
 
 		// setup services
 		userService = new UserService(new Config("user"));
-		channelService = new ChannelService(executorService);
-		channelService.setOnChannelCloseListener(new OnCloseListener() {
+		connectionService = new ConnectionService(executorService, messageExecutorFactory);
+		connectionService.setOnChannelCloseListener(new OnCloseListener() {
 			@Override
 			public void onClose(IChannel channel) {
 				userService.logoutUser(userService.getUser(channel));
@@ -73,7 +72,6 @@ public class Chatserver implements IChatserverCli, Runnable {
 		});
 
 		messageExecutorFactory = new ServerMessageExecutorFactory(userService);
-		messageService = new MessageService(messageExecutorFactory, executorService);
 
 		// setup shell
 		shell = new Shell(componentName, userRequestStream, userResponseStream);
@@ -92,14 +90,14 @@ public class Chatserver implements IChatserverCli, Runnable {
 		}
 
 		// create dispatcher
-		dispatcher = new Dispatcher(channelService, messageService, serverSocket);
+		dispatcher = new Dispatcher(connectionService, serverSocket);
 	}
 
 	private void setupUDP(int port) {
 		try {
 			DatagramSocket socket = new DatagramSocket(port);
-			IChannel udpChannel = new UDPChannel(messageService, socket);
-			channelService.addChannel(udpChannel);
+			IChannel udpChannel = new UDPChannel(connectionService, socket);
+			connectionService.addChannel(udpChannel);
 		} catch (SocketException e) {
 			LOGGER.log(Level.INFO, "setting up udp socket failed");
 			e.printStackTrace();
@@ -129,7 +127,7 @@ public class Chatserver implements IChatserverCli, Runnable {
 			dispatcher.stop();
 		}
 
-		channelService.closeAll();
+		connectionService.closeAll();
 		executorService.shutdown();
 		shell.close();
 	}

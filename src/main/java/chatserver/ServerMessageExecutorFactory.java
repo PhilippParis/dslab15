@@ -3,7 +3,6 @@ package chatserver;
 import channels.IChannel;
 import executors.IMessageExecutor;
 import executors.IMessageExecutorFactory;
-import service.IChannelService;
 import service.IUserService;
 
 /**

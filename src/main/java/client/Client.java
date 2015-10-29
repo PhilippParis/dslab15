@@ -18,10 +18,8 @@ import domain.*;
 import domain.messages.*;
 import domain.responses.*;
 import executors.IMessageExecutorFactory;
-import service.ChannelService;
-import service.IChannelService;
-import service.IMessageService;
-import service.MessageService;
+import service.ConnectionService;
+import service.IConnectionService;
 import util.Config;
 
 public class Client implements IClientCli, Runnable {
@@ -43,8 +41,7 @@ public class Client implements IClientCli, Runnable {
 	private Dispatcher dispatcher;
 
 	// services
-	private IChannelService channelService;
-	private IMessageService messageService;
+	private IConnectionService connectionService;
 	private IMessageExecutorFactory messageExecutorFactory;
 
 	/**
@@ -65,9 +62,8 @@ public class Client implements IClientCli, Runnable {
 		this.userResponseStream = userResponseStream;
 
 		// setup services
-		channelService = new ChannelService(executorService);
-		messageExecutorFactory = new ClientMessageExecutorFactory(userResponseStream, channelService);
-		messageService = new MessageService(messageExecutorFactory, executorService);
+		connectionService = new ConnectionService(executorService, messageExecutorFactory);
+		messageExecutorFactory = new ClientMessageExecutorFactory(userResponseStream, connectionService);
 
 		// setup shell
 		shell = new Shell(componentName, userRequestStream, userResponseStream);
@@ -92,15 +88,15 @@ public class Client implements IClientCli, Runnable {
 
 	private void setupTCP(String host, int port) throws IOException {
 		Socket socket = new Socket(host, port);
-		serverChannel = new TCPChannel(socket, messageService);
-		channelService.addChannel(serverChannel);
+		serverChannel = new TCPChannel(socket, connectionService);
+		connectionService.addChannel(serverChannel);
 	}
 
 	private void setupUDP(String host, int port) throws SocketException {
 		DatagramSocket socket = new DatagramSocket();
 		serverUDPAddress = new InetSocketAddress(host, port);
-		udpChannel = new UDPChannel(messageService, socket);
-		channelService.addChannel(udpChannel);
+		udpChannel = new UDPChannel(connectionService, socket);
+		connectionService.addChannel(udpChannel);
 	}
 
 	@Command
@@ -196,8 +192,8 @@ public class Client implements IClientCli, Runnable {
 
 		// connect to client
 		Socket socket = new Socket(response.getHost(), response.getPort());
-		IChannel privateChannel = new TCPChannel(socket, messageService);
-		channelService.addChannel(privateChannel);
+		IChannel privateChannel = new TCPChannel(socket, connectionService);
+		connectionService.addChannel(privateChannel);
 
 		// send private message and wait for acknowledge
 		try {
@@ -209,7 +205,7 @@ public class Client implements IClientCli, Runnable {
 		}
 
 		// close connection
-		channelService.closeChannel(privateChannel);
+		connectionService.closeChannel(privateChannel);
 		return "'" + username +"' replied with !ack.";
 	}
 
@@ -249,7 +245,7 @@ public class Client implements IClientCli, Runnable {
 			// start tcp server and wait for incoming messages
 			try {
 				ServerSocket serverSocket = new ServerSocket(msg.getPort());
-				dispatcher = new Dispatcher(channelService, messageService, serverSocket);
+				dispatcher = new Dispatcher(connectionService, serverSocket);
 				executorService.execute(dispatcher);
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "error creating server socket (TCP)");
@@ -285,7 +281,7 @@ public class Client implements IClientCli, Runnable {
 			dispatcher.stop();
 		}
 
-		channelService.closeAll();
+		connectionService.closeAll();
 		shell.close();
 		executorService.shutdown();
 		return null;

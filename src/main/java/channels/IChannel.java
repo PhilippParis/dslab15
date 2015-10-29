@@ -2,7 +2,7 @@ package channels;
 
 import domain.IMessage;
 import domain.Task;
-import service.IMessageService;
+import service.IConnectionService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,10 +20,10 @@ public abstract class IChannel implements Runnable {
     private AtomicLong messageID = new AtomicLong();
     private ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<Long, Task>();
     private ArrayList<OnCloseListener> listeners = new ArrayList<>();
-    protected IMessageService messageService;
+    private IConnectionService connectionService;
 
-    public IChannel(IMessageService messageService) {
-        this.messageService = messageService;
+    public IChannel(IConnectionService connectionService) {
+        this.connectionService = connectionService;
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class IChannel implements Runnable {
                     task.signal();
                 } else {
                     // send and wait not active -> use executor
-                    messageService.execute(response, this);
+                    connectionService.execute(response, this);
                 }
             }
         } catch (IOException | ClassNotFoundException e) {

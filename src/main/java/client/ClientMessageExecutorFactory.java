@@ -3,7 +3,7 @@ package client;
 import channels.IChannel;
 import executors.IMessageExecutor;
 import executors.IMessageExecutorFactory;
-import service.IChannelService;
+import service.IConnectionService;
 
 import java.io.PrintStream;
 
@@ -12,9 +12,9 @@ import java.io.PrintStream;
  */
 public class ClientMessageExecutorFactory implements IMessageExecutorFactory {
     private PrintStream userResponseStream;
-    private IChannelService channelService;
+    private IConnectionService channelService;
 
-    public ClientMessageExecutorFactory(PrintStream userResponseStream, IChannelService channelService) {
+    public ClientMessageExecutorFactory(PrintStream userResponseStream, IConnectionService channelService) {
         this.userResponseStream = userResponseStream;
         this.channelService = channelService;
     }

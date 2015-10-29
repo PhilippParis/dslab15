@@ -1,7 +1,6 @@
 package channels;
 
-import service.IChannelService;
-import service.IMessageService;
+import service.IConnectionService;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,12 +13,10 @@ import java.util.logging.Logger;
 public class Dispatcher implements Runnable {
     private final static Logger LOGGER = Logger.getLogger(Dispatcher.class.getName());
     private ServerSocket serverSocket;
-    private IMessageService messageService;
-    private IChannelService channelService;
+    private IConnectionService connectionService;
 
-    public Dispatcher(IChannelService channelService, IMessageService messageService, ServerSocket serverSocket) {
-        this.channelService = channelService;
-        this.messageService = messageService;
+    public Dispatcher(IConnectionService connectionService, ServerSocket serverSocket) {
+        this.connectionService = connectionService;
         this.serverSocket = serverSocket;
     }
 
@@ -29,14 +26,14 @@ public class Dispatcher implements Runnable {
         try {
             while (true) {
                 Socket socket = serverSocket.accept();
-                channelService.addChannel(createTCPChannel(socket));
+                connectionService.addChannel(createTCPChannel(socket));
             }
         } catch (IOException e) { }
         LOGGER.info("Dispatcher stopped");
     }
 
     public IChannel createTCPChannel(Socket socket) {
-        return new TCPChannel(socket, messageService);
+        return new TCPChannel(socket, connectionService);
     }
 
     public void stop() {
