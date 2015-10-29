@@ -3,9 +3,11 @@ package channels;
 import domain.IMessage;
 import domain.Task;
 import domain.User;
+import exceptions.UnexpectedResponseException;
 import service.IMessageService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,6 +21,7 @@ public abstract class IChannel implements Runnable {
     private final static Logger LOGGER = Logger.getLogger(IChannel.class.getName());
     private AtomicLong messageID = new AtomicLong();
     private ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<Long, Task>();
+    private ArrayList<OnCloseListener> listeners = new ArrayList<>();
     protected IMessageService messageService;
 
     public IChannel(IMessageService messageService) {
@@ -42,7 +45,7 @@ public abstract class IChannel implements Runnable {
      * @param message message to send
      * @return response (can be null if timeout occurred)
      */
-    public <ResponseType extends IMessage> ResponseType sendAndWait(IMessage message) throws TimeoutException {
+    public <ResponseType extends IMessage> ResponseType sendAndWait(IMessage message) throws TimeoutException, UnexpectedResponseException {
         // create unique message id
         long id = messageID.incrementAndGet();
 
@@ -61,7 +64,12 @@ public abstract class IChannel implements Runnable {
 
         // remove task and return response
         tasks.remove(id);
-        return (ResponseType) task.getResponse();
+
+        try {
+            return (ResponseType) task.getResponse();
+        } catch (ClassCastException e) {
+            throw new UnexpectedResponseException(e);
+        }
     }
 
     @Override
@@ -89,6 +97,15 @@ public abstract class IChannel implements Runnable {
         for (Task task : tasks.values()) {
             task.signal();
         }
+
+        // call listeners
+        for (OnCloseListener listener : listeners) {
+            listener.onClose();
+        }
+    }
+
+    public void addOnCloseListener(OnCloseListener listener) {
+        listeners.add(listener);
     }
 
     /**

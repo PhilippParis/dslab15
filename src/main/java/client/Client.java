@@ -17,6 +17,7 @@ import cli.Shell;
 import domain.*;
 import domain.messages.*;
 import domain.responses.*;
+import exceptions.UnexpectedResponseException;
 import executors.IMessageExecutorFactory;
 import service.ChannelService;
 import service.IChannelService;
@@ -112,7 +113,9 @@ public class Client implements IClientCli, Runnable {
 			LoginResponse response = serverChannel.sendAndWait(msg);
 			return response.getMessage();
 		} catch (TimeoutException e) {
-			return "timeout occurred; response not received";
+			return "timeout occurred: Server not reachable";
+		} catch (UnexpectedResponseException e) {
+			return "Unexpected response received";
 		}
 	}
 
@@ -125,7 +128,9 @@ public class Client implements IClientCli, Runnable {
 			LogoutResponse response = serverChannel.sendAndWait(msg);
 			return response.getMessage();
 		} catch (TimeoutException e) {
-			return "timeout occurred; response not received";
+			return "timeout occurred: Server not reachable";
+		} catch (UnexpectedResponseException e) {
+			return "Unexpected response received";
 		}
 	}
 
@@ -140,7 +145,9 @@ public class Client implements IClientCli, Runnable {
 				return response.getMessage();
 			}
 		} catch (TimeoutException e) {
-			return "timeout occurred; response not received";
+			return "timeout occurred: Server not reachable";
+		} catch (UnexpectedResponseException e) {
+			return "unexpected response received";
 		}
 
 		return null;
@@ -156,7 +163,9 @@ public class Client implements IClientCli, Runnable {
 		try {
 			response = udpChannel.sendAndWait(msg);
 		} catch (TimeoutException e) {
-			return "timeout occurred; response not received";
+			return "timeout occurred: Server not reachable";
+		} catch (UnexpectedResponseException e) {
+			return "unexpected response received";
 		}
 
 		String output = "Online users: \n";
@@ -177,7 +186,9 @@ public class Client implements IClientCli, Runnable {
 		try {
 			response = serverChannel.sendAndWait(lookupMessage);
 		} catch (TimeoutException e) {
-			return "timeout occurred; response not received";
+			return "timeout occurred: Server not reachable";
+		} catch (UnexpectedResponseException e) {
+			return "unexpected response received";
 		}
 
 		if (!response.isSuccessful()) {
@@ -193,7 +204,9 @@ public class Client implements IClientCli, Runnable {
 		try {
 			privateChannel.sendAndWait(privateMessage);
 		} catch (TimeoutException e) {
-			return "timeout ocurred; !ack not received";
+			return "timeout occurred: Server not reachable";
+		} catch (UnexpectedResponseException e) {
+			return "unexpected response received";
 		}
 
 		// close connection
@@ -210,7 +223,9 @@ public class Client implements IClientCli, Runnable {
 		try {
 			response = serverChannel.sendAndWait(msg);
 		} catch (TimeoutException e) {
-			return "* timeout occurred; response not received *";
+			return "timeout occurred: Server not reachable";
+		} catch (UnexpectedResponseException e) {
+			return "unexpected response received";
 		}
 
 		return response.getHost() + ":" + response.getPort();
@@ -226,7 +241,9 @@ public class Client implements IClientCli, Runnable {
 		try {
 			response = serverChannel.sendAndWait(msg);
 		} catch (TimeoutException e) {
-			return "timeout ocurred; response not received";
+			return "timeout occurred: Server not reachable";
+		} catch (UnexpectedResponseException e) {
+			return "unexpected response received";
 		}
 
 		if (response.isSuccessful()) {
