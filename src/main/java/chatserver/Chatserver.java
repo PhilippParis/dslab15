@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import channels.OnCloseListener;
@@ -25,6 +26,7 @@ import util.Config;
 
 public class Chatserver implements IChatserverCli, Runnable {
 	private final static Logger LOGGER = Logger.getLogger(Chatserver.class.getName());
+	private final Level globalLoggingLevel = Level.OFF;
 
 	private String componentName;
 	private Config config;
@@ -61,6 +63,9 @@ public class Chatserver implements IChatserverCli, Runnable {
 		this.config = config;
 		this.userRequestStream = userRequestStream;
 		this.userResponseStream = userResponseStream;
+
+		// logging
+		LOGGER.getParent().setLevel(globalLoggingLevel);
 
 		// setup services
 		userService = new UserService(new Config("user"));

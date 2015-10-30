@@ -26,6 +26,7 @@ import util.Config;
 
 public class Client implements IClientCli, Runnable {
 	private final static Logger LOGGER = Logger.getLogger(Client.class.getName());
+	private final Level globalLoggingLevel = Level.OFF;
 
 	private String componentName;
 	private Config config;
@@ -63,6 +64,9 @@ public class Client implements IClientCli, Runnable {
 		this.config = config;
 		this.userRequestStream = userRequestStream;
 		this.userResponseStream = userResponseStream;
+
+		// logging
+		LOGGER.getParent().setLevel(globalLoggingLevel);
 
 		// setup services
 		connectionService = new ConnectionService(executorService);
