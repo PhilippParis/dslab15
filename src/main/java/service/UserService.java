@@ -1,6 +1,7 @@
 package service;
 
 import channels.IChannel;
+import dao.IUserDAO;
 import domain.User;
 import util.Config;
 
@@ -14,15 +15,20 @@ import java.util.MissingResourceException;
  */
 public class UserService implements IUserService {
     private Map<String, User> users = new HashMap<>();
-    private Config loginConfig;
+    private IUserDAO userDAO;
 
-    public UserService(Config loginConfig) {
-        this.loginConfig = loginConfig;
+    public UserService(IUserDAO userDAO) {
+        this.userDAO = userDAO;
+
+        // add all users
+        for (User user : userDAO.getAllUsers()) {
+            addUser(user);
+        }
     }
 
     @Override
     public boolean addUser(User user) {
-        if (users.containsKey(user.username())) {
+        if (user == null || users.containsKey(user.username())) {
             return false;
         }
 
@@ -42,7 +48,7 @@ public class UserService implements IUserService {
 
     public User getUser(IChannel channel) {
         for (User user : users.values()) {
-            if (user.channel().equals(channel)) {
+            if (user.getChannel() != null && user.getChannel().equals(channel)) {
                 return user;
             }
         }
@@ -59,13 +65,7 @@ public class UserService implements IUserService {
             return false;
         }
 
-        boolean success = false;
-
-        try {
-            success = loginConfig.getString(user.username() + ".password").equals(password);
-        } catch (MissingResourceException e) {
-            return false;
-        }
+        boolean success = user.getPassword().equals(password);
 
         if (success) {
             users.put(user.username(), user);

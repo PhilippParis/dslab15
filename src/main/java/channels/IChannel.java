@@ -27,7 +27,7 @@ public abstract class IChannel implements Runnable {
     }
 
     /**
-     * sends a message via this channel
+     * sends a message via this getChannel
      * @param message message to send
      */
     public abstract void send(IMessage message);
@@ -111,7 +111,7 @@ public abstract class IChannel implements Runnable {
     }
 
     /**
-     * stops the connection and closes the channel
+     * stops the connection and closes the getChannel
      */
     public abstract void stop();
 }

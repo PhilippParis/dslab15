@@ -43,13 +43,10 @@ public class ServerMessageExecutor extends IMessageExecutor {
             response.setSuccessful(false);
             response.setMessage("user '" + message.getUsername() + "' already logged in");
         } else {
-            if (user == null) {
-                user = new User(message.getUsername(), channel);
-            }
-
             // authenticate user
-            if (userService.loginUser(user, message.getPassword())) {
+            if (user != null && userService.loginUser(user, message.getPassword())) {
                 // successfully logged in
+                user.setChannel(channel);
                 response.setSuccessful(true);
                 response.setMessage("Successfully logged in");
             } else {
@@ -77,12 +74,12 @@ public class ServerMessageExecutor extends IMessageExecutor {
         if (user == null || !user.isLoggedIn()) {
             // user not logged in
             response.setSuccessful(false);
-            response.setMessage("currently not logged in");
+            response.setMessage("currently not logged in.");
         } else {
             user.setLoggedIn(false);
 
             response.setSuccessful(true);
-            response.setMessage("Successfully logged out");
+            response.setMessage("Successfully logged out.");
         }
 
         // send response
@@ -116,7 +113,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
             // forward message to other clients
             for (User otherUser : userService.getAllUsers()) {
                 if (!otherUser.equals(user)) {
-                    connectionService.send(msg, otherUser.channel());
+                    connectionService.send(msg, otherUser.getChannel());
                 }
             }
         }
@@ -142,7 +139,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
             response.setMessage("Register failed: not logged in");
         } else {
             response.setSuccessful(true);
-            response.setMessage("Successfully registered address for " + user.username());
+            response.setMessage("Successfully registered address for " + user.username() + ".");
 
             // register address
             user.setPrivateAddress(message.getHost(), message.getPort());

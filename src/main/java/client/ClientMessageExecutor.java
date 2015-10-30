@@ -45,7 +45,7 @@ public class ClientMessageExecutor extends IMessageExecutor {
         // send response
         connectionService.send(response, channel);
 
-        // stop channel
+        // stop getChannel
         connectionService.closeChannel(channel);
     }
 }

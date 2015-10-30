@@ -19,6 +19,8 @@ import cli.Shell;
 import channels.Dispatcher;
 import channels.IChannel;
 import channels.UDPChannel;
+import dao.ConfigUserDAO;
+import dao.IUserDAO;
 import domain.User;
 import executors.IMessageExecutorFactory;
 import service.*;
@@ -42,6 +44,9 @@ public class Chatserver implements IChatserverCli, Runnable {
 	private IConnectionService connectionService;
 	private Dispatcher dispatcher;
 	private IMessageExecutorFactory messageExecutorFactory;
+
+	// dao
+	private IUserDAO userDAO;
 
 	// connection
 	private ServerSocket serverSocket;
@@ -67,8 +72,11 @@ public class Chatserver implements IChatserverCli, Runnable {
 		// logging
 		LOGGER.getParent().setLevel(globalLoggingLevel);
 
+		//setup daos
+		userDAO = new ConfigUserDAO(new Config("user"));
+
 		// setup services
-		userService = new UserService(new Config("user"));
+		userService = new UserService(userDAO);
 		connectionService = new ConnectionService(executorService);
 		messageExecutorFactory = new ServerMessageExecutorFactory(userService, connectionService);
 
@@ -122,7 +130,7 @@ public class Chatserver implements IChatserverCli, Runnable {
 	public String users() throws IOException {
 		String output = "Online Users:\n";
 		for (User user : userService.getAllUsers()) {
-			output += user.username() + " " + (user.isLoggedIn()? "online" : "offline") + "\n";
+			output += "* " + user.username() + " " + (user.isLoggedIn()? "online" : "offline") + "\n";
 		}
 		return  output;
 	}

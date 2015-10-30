@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Implementation of the channel service interface
+ * Implementation of the getChannel service interface
  */
 public class ConnectionService implements IConnectionService {
     private ArrayList<IChannel> channels = new ArrayList<>();
@@ -37,7 +37,7 @@ public class ConnectionService implements IConnectionService {
         channels.add(channel);
         channel.addOnCloseListener(onCloseListener);
 
-        // start the execution of the channel -> listen for incomming messages
+        // start the execution of the getChannel -> listen for incomming messages
         executorService.execute(channel);
     }
 

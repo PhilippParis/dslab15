@@ -12,10 +12,10 @@ public class User {
     private IChannel channel;
     private boolean loggedIn = false;
     private InetSocketAddress privateAddress = null;
+    private String password;
 
-    public User(String username, IChannel channel) {
+    public User(String username) {
         this.username = username;
-        this.channel = channel;
     }
 
     public boolean isLoggedIn() {
@@ -34,6 +34,15 @@ public class User {
         return username;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
     public InetSocketAddress getPrivateAddress() {
         return privateAddress;
     }
@@ -46,8 +55,12 @@ public class User {
         return privateAddress != null;
     }
 
-    public IChannel channel() {
+    public IChannel getChannel() {
         return channel;
+    }
+
+    public void setChannel(IChannel channel) {
+        this.channel = channel;
     }
 
     @Override

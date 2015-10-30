@@ -33,8 +33,8 @@ public interface IUserService {
     User getUser(String username);
 
     /**
-     * @param channel connection channel
-     * @return returns the user for the specified channel
+     * @param channel connection getChannel
+     * @return returns the user for the specified getChannel
      */
     public User getUser(IChannel channel);
 

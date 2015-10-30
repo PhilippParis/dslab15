@@ -157,7 +157,7 @@ public class Client implements IClientCli, Runnable {
 			return "unexpected response received";
 		}
 
-		return null;
+		return "successfully send message";
 	}
 
 	@Command
@@ -218,7 +218,7 @@ public class Client implements IClientCli, Runnable {
 
 		// close connection
 		connectionService.closeChannel(privateChannel);
-		return "'" + username +"' replied with !ack.";
+		return username + " replied with !ack.*";
 	}
 
 	@Command
@@ -289,7 +289,7 @@ public class Client implements IClientCli, Runnable {
 			return null;
 		}
 
-		return null;
+		return "No message received !";
 	}
 
 	@Command
