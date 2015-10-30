@@ -1,5 +1,6 @@
 package service;
 
+import channels.Dispatcher;
 import domain.IMessage;
 
 /**
@@ -8,10 +9,9 @@ import domain.IMessage;
 public interface IClientService {
 
     /**
-     * sets if the user is currently logged in
-     * @param loggedIn logged in
+     * sets the status to logged out
      */
-    void setLoggedIn(boolean loggedIn);
+    void logout();
 
     /**
      * @return returns true if the client is currently logged in
@@ -19,10 +19,10 @@ public interface IClientService {
     boolean isLoggedIn();
 
     /**
-     * sets username of the currently logged in User
+     * sets the user status to logged in and sets the current username
      * @param username username
      */
-    void setUsername(String username);
+    void login(String username);
 
     /**
      * @return  returns the username of the currently logged in account
@@ -40,4 +40,10 @@ public interface IClientService {
      * @param message message
      */
     void setLastMessage(IMessage message);
+
+    /**
+     * creates and adds a dispatcher for incomming private connections
+     * @param port port
+     */
+    Dispatcher createPrivateConnectionDispatcher(int port);
 }

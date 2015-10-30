@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.SocketException;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -129,7 +130,17 @@ public class Chatserver implements IChatserverCli, Runnable {
 	@Override
 	public String users() throws IOException {
 		String output = "Online Users:\n";
-		for (User user : userService.getAllUsers()) {
+		List<User> users = new ArrayList<>(userService.getAllUsers());
+
+		// sort users alphabetically
+		Collections.sort(users, new Comparator<User>() {
+			@Override
+			public int compare(User o1, User o2) {
+				return o1.username().compareTo(o2.username());
+			}
+		});
+		
+		for (User user : users) {
 			output += "* " + user.username() + " " + (user.isLoggedIn()? "online" : "offline") + "\n";
 		}
 		return  output;

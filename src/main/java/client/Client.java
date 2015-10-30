@@ -41,7 +41,6 @@ public class Client implements IClientCli, Runnable {
 	private IChannel serverChannel;
 	private IChannel udpChannel;
 	private SocketAddress serverUDPAddress;
-	private Dispatcher dispatcher;
 
 	// services
 	private IConnectionService connectionService;
@@ -74,7 +73,7 @@ public class Client implements IClientCli, Runnable {
 
 		// setup services
 		connectionService = new ConnectionService(executorService);
-		clientService = new ClientService();
+		clientService = new ClientService(executorService, connectionService);
 		messageExecutorFactory = new ClientMessageExecutorFactory(shell, connectionService, clientService);
 		connectionService.setMessageExecutorFactory(messageExecutorFactory);
 	}
@@ -115,8 +114,7 @@ public class Client implements IClientCli, Runnable {
 
 		try {
 			LoginResponse response = (LoginResponse) connectionService.sendAndWait(msg, serverChannel);
-			clientService.setUsername(username);
-			clientService.setLoggedIn(true);
+			clientService.login(username);
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
@@ -132,7 +130,7 @@ public class Client implements IClientCli, Runnable {
 
 		try {
 			LogoutResponse response = (LogoutResponse) connectionService.sendAndWait(msg, serverChannel);
-			clientService.setLoggedIn(false);
+			clientService.logout();
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
@@ -165,7 +163,7 @@ public class Client implements IClientCli, Runnable {
 	public String list() throws IOException {
 		UDPMessage msg = new ListMessage();
 		msg.setSocketAddress(serverUDPAddress);
-		ListResponse response = null;
+		ListResponse response;
 
 		try {
 			response = (ListResponse) connectionService.sendAndWait(msg, udpChannel);
@@ -189,7 +187,7 @@ public class Client implements IClientCli, Runnable {
 
 		// do lookup
 		LookupMessage lookupMessage = new LookupMessage(username);
-		LookupResponse response = null;
+		LookupResponse response;
 		try {
 			response = (LookupResponse) connectionService.sendAndWait(lookupMessage, serverChannel);
 		} catch (TimeoutException e) {
@@ -199,7 +197,7 @@ public class Client implements IClientCli, Runnable {
 		}
 
 		if (!response.isSuccessful()) {
-			return "Wrong username or user not reachable.";
+			return response.getMessage();
 		}
 
 		// connect to client
@@ -225,7 +223,7 @@ public class Client implements IClientCli, Runnable {
 	@Override
 	public String lookup(String username) throws IOException {
 		IMessage msg = new LookupMessage(username);
-		LookupResponse response = null;
+		LookupResponse response;
 
 		try {
 			response = (LookupResponse) connectionService.sendAndWait(msg, serverChannel);
@@ -235,7 +233,7 @@ public class Client implements IClientCli, Runnable {
 			return "unexpected response received";
 		}
 
-		return response.getHost() + ":" + response.getPort();
+		return response.getMessage();
 	}
 
 	@Command
@@ -248,17 +246,12 @@ public class Client implements IClientCli, Runnable {
 
 		RegisterMessage msg = new RegisterMessage(input[0], Integer.valueOf(input[1]));
 
-		// try to start tcp server
-		try {
-			ServerSocket serverSocket = new ServerSocket(msg.getPort());
-			dispatcher = new Dispatcher(connectionService, serverSocket);
-			executorService.execute(dispatcher);
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, "error creating server socket");
+		Dispatcher dispatcher = clientService.createPrivateConnectionDispatcher(msg.getPort());
+		if (dispatcher == null) {
 			return "error creating server socket";
 		}
 
-		RegisterResponse response = null;
+		RegisterResponse response;
 
 		try {
 			response = (RegisterResponse) connectionService.sendAndWait(msg, serverChannel);
@@ -300,17 +293,15 @@ public class Client implements IClientCli, Runnable {
 		// disable new task from being submitted
 		executorService.shutdown();
 
+		// logout user -> will stop all private connection dispatchers
+		clientService.logout();
+
 		// streams
 		userResponseStream.close();
 		try {
 			userRequestStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-
-		// threads / sockets
-		if (dispatcher != null) {
-			dispatcher.stop();
 		}
 
 		// close all connections

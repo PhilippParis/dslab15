@@ -159,18 +159,24 @@ public class ServerMessageExecutor extends IMessageExecutor {
         LookupResponse response = new LookupResponse();
         response.setId(message.getId());
 
-        // get user
-        User user = userService.getUser(message.getUsername());
+        // get users
+        User user = userService.getUser(channel);
+        User otherUser = userService.getUser(message.getUsername());
 
-        if (user == null || !user.isLoggedIn() ||
-                user == null || !user.isLoggedIn() || !user.privateAddressRegistered()) {
-            // user not logged in or user not found / address not registered
+        if (user == null || !user.isLoggedIn()) {
+            // user not logged in
             response.setSuccessful(false);
+            response.setMessage("lookup failed: not logged in");
+        } else if (otherUser == null || !otherUser.isLoggedIn() || !otherUser.privateAddressRegistered()) {
+            // other user not logged in or no address registered
+            response.setSuccessful(false);
+            response.setMessage("lookup failed: Wrong username or user not reachable");
         } else {
             response.setSuccessful(true);
-            InetSocketAddress address = user.getPrivateAddress();
+            InetSocketAddress address = otherUser.getPrivateAddress();
             response.setHost(address.getHostString());
             response.setPort(address.getPort());
+            response.setMessage(address.getHostString() + ":" + address.getPort());
         }
 
         // send response

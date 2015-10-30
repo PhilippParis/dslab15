@@ -11,6 +11,7 @@ public class LookupResponse extends IMessage {
     private String host;
     private int port;
     private boolean successful;
+    private String message;
 
     @Override
     public void execute(IMessageExecutor executor) {
@@ -41,12 +42,21 @@ public class LookupResponse extends IMessage {
         this.successful = successful;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     @Override
     public String toString() {
         return "LookupResponse{" +
                 "host='" + host + '\'' +
                 ", port=" + port +
                 ", successful=" + successful +
+                ", message='" + message + '\'' +
                 '}';
     }
 }
