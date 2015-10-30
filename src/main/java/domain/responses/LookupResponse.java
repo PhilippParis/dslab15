@@ -4,7 +4,8 @@ import domain.IMessage;
 import executors.IMessageExecutor;
 
 /**
- * Created by phili on 10/21/15.
+ * response for the lookup message
+ * contains the address of the lookedup user
  */
 public class LookupResponse extends IMessage {
     private String host;

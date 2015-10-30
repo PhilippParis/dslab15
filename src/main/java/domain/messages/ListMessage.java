@@ -6,7 +6,8 @@ import executors.IMessageExecutor;
 import java.net.SocketAddress;
 
 /**
- * Created by phili on 10/20/15.
+ * !list
+ * lists all online users in alphabetical order
  */
 public class ListMessage extends UDPMessage {
 

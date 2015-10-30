@@ -11,7 +11,7 @@ import java.util.concurrent.TimeoutException;
 
 
 /**
- * Created by phili on 10/20/15.
+ * Connection Service Interface
  */
 public interface IConnectionService {
 

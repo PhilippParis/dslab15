@@ -4,7 +4,8 @@ import domain.IMessage;
 import executors.IMessageExecutor;
 
 /**
- * Created by phili on 10/20/15.
+ * !send <msg>
+ * sends a public message to all logged in users
  */
 public class SendMessage extends IMessage {
     private String text;

@@ -4,7 +4,8 @@ import domain.IMessage;
 import executors.IMessageExecutor;
 
 /**
- * Created by phili on 10/20/15.
+ * !register <IP:port>
+ * registers the address on the server
  */
 public class RegisterMessage extends IMessage {
     private String host;

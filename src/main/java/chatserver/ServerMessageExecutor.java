@@ -10,10 +10,12 @@ import service.IUserService;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.logging.Logger;
 
 /**
- * Created by phili on 10/20/15.
+ * Message Executor for the Server
+ * handles all incoming messages
  */
 public class ServerMessageExecutor extends IMessageExecutor {
     private final static Logger LOGGER = Logger.getLogger(ServerMessageExecutor.class.getName());
@@ -187,6 +189,9 @@ public class ServerMessageExecutor extends IMessageExecutor {
                 users.add(user.username());
             }
         }
+
+        // sort list alphabetically
+        Collections.sort(users);
 
         // create response
         ListResponse response = new ListResponse();

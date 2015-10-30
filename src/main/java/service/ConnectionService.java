@@ -34,11 +34,13 @@ public class ConnectionService implements IConnectionService {
             return;
         }
 
-        channels.add(channel);
-        channel.addOnCloseListener(onCloseListener);
+        synchronized (channel) {
+            channels.add(channel);
+            channel.addOnCloseListener(onCloseListener);
 
-        // start the execution of the getChannel -> listen for incomming messages
-        executorService.execute(channel);
+            // start the execution of the getChannel -> listen for incomming messages
+            executorService.execute(channel);
+        }
     }
 
     @Override
@@ -47,8 +49,10 @@ public class ConnectionService implements IConnectionService {
             return;
         }
 
-        channels.remove(channel);
-        channel.stop();
+        synchronized (channel) {
+            channels.remove(channel);
+            channel.stop();
+        }
     }
 
     public void setOnChannelCloseListener(OnCloseListener onCloseListener) {

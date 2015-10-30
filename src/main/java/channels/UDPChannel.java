@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by phili on 10/21/15.
+ * Connection Channel which uses UDP
  */
 public class UDPChannel extends IChannel {
     private final static Logger LOGGER = Logger.getLogger(UDPChannel.class.getName());
@@ -26,6 +26,11 @@ public class UDPChannel extends IChannel {
 
     @Override
     public void send(IMessage message) {
+        if (!(message instanceof UDPMessage)) {
+            LOGGER.log(Level.SEVERE, "message is no UDP message: " + message);
+            return;
+        }
+
         // create and send datagram packet
         try {
             byte[] data = connectionService.encode(message);

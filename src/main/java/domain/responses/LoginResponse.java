@@ -4,7 +4,7 @@ import domain.IMessage;
 import executors.IMessageExecutor;
 
 /**
- * Created by phili on 10/21/15.
+ * response for the login message
  */
 public class LoginResponse extends IMessage {
     private String message;

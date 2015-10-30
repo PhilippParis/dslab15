@@ -4,7 +4,8 @@ import domain.IMessage;
 import executors.IMessageExecutor;
 
 /**
- * Created by phili on 10/20/15.
+ * !logout
+ * log out currently logged in user
  */
 public class LogoutMessage extends IMessage {
 

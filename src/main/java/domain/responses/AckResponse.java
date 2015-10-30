@@ -4,7 +4,7 @@ import domain.IMessage;
 import executors.IMessageExecutor;
 
 /**
- * Created by phili on 10/24/15.
+ * Acknowledgement for the reception of a private message
  */
 public class AckResponse extends IMessage {
     @Override

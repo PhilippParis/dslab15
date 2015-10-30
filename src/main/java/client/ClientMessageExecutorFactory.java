@@ -10,7 +10,7 @@ import service.IConnectionService;
 import java.io.PrintStream;
 
 /**
- * Created by phili on 10/20/15.
+ * Factory which creates ServerMessageExecutors
  */
 public class ClientMessageExecutorFactory implements IMessageExecutorFactory {
     private Shell shell;

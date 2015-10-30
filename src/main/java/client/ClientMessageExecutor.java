@@ -13,7 +13,8 @@ import java.io.PrintStream;
 import java.util.logging.Logger;
 
 /**
- * Created by phili on 10/20/15.
+ * Message Executor for the Client
+ * handles all incoming messages except responses for sent messages
  */
 public class ClientMessageExecutor extends IMessageExecutor {
     private final static Logger LOGGER = Logger.getLogger(ClientMessageExecutor.class.getName());

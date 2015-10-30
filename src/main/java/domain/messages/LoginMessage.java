@@ -4,7 +4,8 @@ import domain.IMessage;
 import executors.IMessageExecutor;
 
 /**
- * Created by phili on 10/20/15.
+ * !login <username> <password>
+ * log in user
  */
 public class LoginMessage extends IMessage {
     private String username;

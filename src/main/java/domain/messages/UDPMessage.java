@@ -5,7 +5,8 @@ import domain.IMessage;
 import java.net.SocketAddress;
 
 /**
- * Created by phili on 10/21/15.
+ * UDP message
+ * all messages send over UDP must extend this class
  */
 public abstract class UDPMessage extends IMessage {
     private SocketAddress address;

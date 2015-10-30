@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 /**
  * Channel Interface
+ * represents a connection which can be used to send and receive messages
  */
 public abstract class IChannel implements Runnable {
     private final static Logger LOGGER = Logger.getLogger(IChannel.class.getName());
@@ -33,10 +34,10 @@ public abstract class IChannel implements Runnable {
     public abstract void send(IMessage message);
 
     /**
-     *
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * blocks till a message was received and returns this message
+     * @return returns the received message
+     * @throws IOException  if an error reading the message occurred
+     * @throws ClassNotFoundException if the type of the message is wrong
      */
     protected abstract IMessage read() throws IOException, ClassNotFoundException;
 
@@ -104,6 +105,11 @@ public abstract class IChannel implements Runnable {
         }
     }
 
+    /**
+     * adds a listener which will be called if this channel stops the execution
+     * and closes the connection
+     * @param listener listener
+     */
     public void addOnCloseListener(OnCloseListener listener) {
         if (listener != null) {
             listeners.add(listener);
@@ -111,7 +117,7 @@ public abstract class IChannel implements Runnable {
     }
 
     /**
-     * stops the connection and closes the getChannel
+     * stops the connection and closes the channel
      */
     public abstract void stop();
 }

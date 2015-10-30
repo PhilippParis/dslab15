@@ -3,7 +3,7 @@ package executors;
 import channels.IChannel;
 
 /**
- * Created by phili on 10/20/15.
+ * MessageExecutor factory
  */
 public interface IMessageExecutorFactory {
 

@@ -4,7 +4,7 @@ import domain.IMessage;
 import executors.IMessageExecutor;
 
 /**
- * Created by phili on 10/21/15.
+ * response for the logout message
  */
 public class LogoutResponse extends IMessage {
     private String message;

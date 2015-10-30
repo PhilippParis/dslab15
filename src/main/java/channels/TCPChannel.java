@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by phili on 10/20/15.
+ * Connection Channel which uses TCP
  */
 public class TCPChannel extends IChannel {
     private final static Logger LOGGER = Logger.getLogger(TCPChannel.class.getName());

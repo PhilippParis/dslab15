@@ -3,7 +3,7 @@ package service;
 import domain.IMessage;
 
 /**
- * Created by phili on 10/29/15.
+ * ClientService
  */
 public class ClientService implements IClientService {
     private boolean loggedIn = false;

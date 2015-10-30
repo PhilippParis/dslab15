@@ -6,7 +6,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Created by phili on 10/26/15.
+ * SendAndWait - Task
  */
 public class Task {
     private IMessage message = null;
@@ -18,18 +18,27 @@ public class Task {
         this.message = message;
     }
 
+    /**
+     * @return  returns the response message;
+     *          can be null, if no response was received
+     */
     public IMessage getResponse() {
         return response;
     }
 
+    /**
+     * sets the response message
+     * @param response response to the message
+     */
     public void setResponse(IMessage response) {
         this.response = response;
     }
 
     /**
-     *
-     * @param timeout
-     * @return timedout
+     * stops the current thread until a response is received
+     * or the timeout occurred
+     * @param timeout timeout in milliseconds
+     * @return timedout true if the timeout period elapsed before a response was received
      */
     public boolean await(long timeout) {
         lock.lock();
@@ -50,6 +59,9 @@ public class Task {
         return false;
     }
 
+    /**
+     * signals the waiting thread to continue
+     */
     public void signal() {
         lock.lock();
         condition.signal();

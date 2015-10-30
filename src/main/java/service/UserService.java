@@ -9,12 +9,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation of the UserService interface
  */
 public class UserService implements IUserService {
-    private Map<String, User> users = new HashMap<>();
+    private Map<String, User> users = new ConcurrentHashMap<>();
     private IUserDAO userDAO;
 
     public UserService(IUserDAO userDAO) {
@@ -65,19 +66,23 @@ public class UserService implements IUserService {
             return false;
         }
 
-        boolean success = user.getPassword().equals(password);
+        synchronized (user) {
+            boolean success = user.getPassword().equals(password);
 
-        if (success) {
-            users.put(user.username(), user);
-            user.setLoggedIn(true);
+            if (success) {
+                users.put(user.username(), user);
+                user.setLoggedIn(true);
+            }
+            return success;
         }
-        return success;
     }
 
     @Override
     public void logoutUser(User user) {
         if (user != null) {
-            user.setLoggedIn(false);
+            synchronized (user) {
+                user.setLoggedIn(false);
+            }
         }
     }
 

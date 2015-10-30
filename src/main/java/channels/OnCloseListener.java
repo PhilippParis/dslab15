@@ -1,7 +1,7 @@
 package channels;
 
 /**
- * Created by phili on 10/27/15.
+ * Listener for the close event
  */
 public interface OnCloseListener {
     void onClose(IChannel channel);

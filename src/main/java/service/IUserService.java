@@ -50,6 +50,10 @@ public interface IUserService {
      */
     boolean loginUser(User user, String key);
 
+    /**
+     * set the user status to logged out
+     * @param user user
+     */
     void logoutUser(User user);
 
 }

@@ -4,7 +4,8 @@ import domain.IMessage;
 import executors.IMessageExecutor;
 
 /**
- * Created by phili on 10/24/15.
+ * !msg <receiver> <message>
+ * private message which is send directly (over TCP) to the receiver
  */
 public class PrivateMessage extends IMessage {
     private String receiver;

@@ -8,7 +8,8 @@ import java.net.Socket;
 import java.util.logging.Logger;
 
 /**
- * Created by phili on 10/20/15.
+ * Dispatcher which listenes on a serverSocket and waits for incoming connections
+ * creates a TCPChannel for each connection and adds it to the connectionService
  */
 public class Dispatcher implements Runnable {
     private final static Logger LOGGER = Logger.getLogger(Dispatcher.class.getName());
@@ -36,6 +37,9 @@ public class Dispatcher implements Runnable {
         return new TCPChannel(socket, connectionService);
     }
 
+    /**
+     * stops the dispatching of incoming connections and stops the thread
+     */
     public void stop() {
         try {
             serverSocket.close();

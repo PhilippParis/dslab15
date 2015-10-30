@@ -4,7 +4,9 @@ import domain.IMessage;
 import executors.IMessageExecutor;
 
 /**
- * Created by phili on 10/20/15.
+ * !lookup <username>
+ * performs a lookup of the given username and returns the address (IP:Port) of the
+ * the user which has registered the address previously
  */
 public class LookupMessage extends IMessage {
     private String username;

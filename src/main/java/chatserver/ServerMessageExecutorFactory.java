@@ -7,7 +7,7 @@ import service.IConnectionService;
 import service.IUserService;
 
 /**
- * Created by phili on 10/20/15.
+ * Factory which creates ServerMessageExecutors
  */
 public class ServerMessageExecutorFactory implements IMessageExecutorFactory {
     private IUserService userService;

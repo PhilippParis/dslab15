@@ -4,7 +4,7 @@ import domain.messages.*;
 import domain.responses.*;
 
 /**
- * Created by phili on 10/20/15.
+ * MessageExecutor interface
  */
 public abstract class IMessageExecutor {
 

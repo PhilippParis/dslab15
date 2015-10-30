@@ -7,7 +7,8 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 
 /**
- * Created by phili on 10/21/15.
+ * Response for the list message
+ * contains a list of online users
  */
 public class ListResponse extends UDPMessage {
     private SocketAddress address;
