@@ -1,6 +1,7 @@
 package client;
 
 import channels.IChannel;
+import cli.Shell;
 import executors.IMessageExecutor;
 import executors.IMessageExecutorFactory;
 import service.IClientService;
@@ -12,18 +13,18 @@ import java.io.PrintStream;
  * Created by phili on 10/20/15.
  */
 public class ClientMessageExecutorFactory implements IMessageExecutorFactory {
-    private PrintStream userResponseStream;
+    private Shell shell;
     private IConnectionService connectionService;
     private IClientService clientService;
 
-    public ClientMessageExecutorFactory(PrintStream userResponseStream, IConnectionService connectionService, IClientService clientService) {
-        this.userResponseStream = userResponseStream;
+    public ClientMessageExecutorFactory(Shell shell, IConnectionService connectionService, IClientService clientService) {
+        this.shell = shell;
         this.connectionService = connectionService;
         this.clientService = clientService;
     }
 
     @Override
     public IMessageExecutor create(IChannel channel) {
-        return new ClientMessageExecutor(userResponseStream, connectionService, clientService, channel);
+        return new ClientMessageExecutor(shell, connectionService, clientService, channel);
     }
 }

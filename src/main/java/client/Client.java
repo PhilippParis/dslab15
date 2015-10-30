@@ -68,15 +68,15 @@ public class Client implements IClientCli, Runnable {
 		// logging
 		LOGGER.getParent().setLevel(globalLoggingLevel);
 
-		// setup services
-		connectionService = new ConnectionService(executorService);
-		clientService = new ClientService();
-		messageExecutorFactory = new ClientMessageExecutorFactory(userResponseStream, connectionService, clientService);
-		connectionService.setMessageExecutorFactory(messageExecutorFactory);
-
 		// setup shell
 		shell = new Shell(componentName, userRequestStream, userResponseStream);
 		shell.register(this);
+
+		// setup services
+		connectionService = new ConnectionService(executorService);
+		clientService = new ClientService();
+		messageExecutorFactory = new ClientMessageExecutorFactory(shell, connectionService, clientService);
+		connectionService.setMessageExecutorFactory(messageExecutorFactory);
 	}
 
 	@Override
