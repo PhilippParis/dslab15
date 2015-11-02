@@ -3,6 +3,7 @@ package service;
 import channels.IChannel;
 import channels.OnCloseListener;
 import domain.IMessage;
+import exceptions.InvalidMessageException;
 import executors.IMessageExecutorFactory;
 
 import java.io.IOException;
@@ -93,5 +94,5 @@ public interface IConnectionService {
      * @param data data sent over the network
      * @return the message object
      */
-    IMessage decode(byte[] data) throws IOException, ClassNotFoundException;
+    IMessage decode(byte[] data) throws InvalidMessageException;
 }

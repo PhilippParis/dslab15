@@ -2,6 +2,8 @@ package channels;
 
 import domain.IMessage;
 import domain.Task;
+import domain.responses.ErrorResponse;
+import exceptions.InvalidMessageException;
 import service.IConnectionService;
 
 import java.io.IOException;
@@ -39,7 +41,7 @@ public abstract class IChannel implements Runnable {
      * @throws IOException  if an error reading the message occurred
      * @throws ClassNotFoundException if the type of the message is wrong
      */
-    protected abstract IMessage read() throws IOException, ClassNotFoundException;
+    protected abstract IMessage read() throws IOException, InvalidMessageException;
 
     /**
      * sends the message and waits for a response
@@ -78,19 +80,24 @@ public abstract class IChannel implements Runnable {
         LOGGER.log(Level.INFO, "Channel started");
         try {
             while(true) {
-                IMessage response = read();
-
-                if (tasks.containsKey(response.getId())) {
-                    // if send and wait is active -> notify waiting thread
-                    Task task = tasks.get(response.getId());
-                    task.setResponse(response);
-                    task.signal();
-                } else {
-                    // send and wait not active -> use executor
-                    connectionService.execute(response, this);
+                try {
+                    IMessage response = read();
+                    if (tasks.containsKey(response.getId())) {
+                        // if send and wait is active -> notify waiting thread
+                        Task task = tasks.get(response.getId());
+                        task.setResponse(response);
+                        task.signal();
+                    } else {
+                        // send and wait not active -> use executor
+                        connectionService.execute(response, this);
+                    }
+                } catch (InvalidMessageException e) {
+                    // invalid message -> send error response
+                    ErrorResponse response = new ErrorResponse("ERROR: invalid message received");
+                    connectionService.send(response, this);
                 }
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
         }
         LOGGER.log(Level.INFO, "Channel stopped");
 

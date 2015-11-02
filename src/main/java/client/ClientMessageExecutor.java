@@ -24,6 +24,7 @@ public class ClientMessageExecutor extends IMessageExecutor {
     private IChannel channel;
 
     public ClientMessageExecutor(Shell shell, IConnectionService connectionService, IClientService clientService, IChannel channel) {
+        super(channel, connectionService);
         this.shell = shell;
         this.connectionService = connectionService;
         this.clientService = clientService;
@@ -59,5 +60,14 @@ public class ClientMessageExecutor extends IMessageExecutor {
 
         // stop getChannel
         connectionService.closeChannel(channel);
+    }
+
+    @Override
+    public void executeErrorResponse(ErrorResponse message) {
+        try {
+            shell.writeLine(message.getMessage());
+        } catch (IOException e) {
+            LOGGER.info("displaying public message failed: " + message);
+        }
     }
 }

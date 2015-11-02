@@ -3,6 +3,7 @@ package service;
 import channels.IChannel;
 import channels.OnCloseListener;
 import domain.IMessage;
+import exceptions.InvalidMessageException;
 import executors.IMessageExecutorFactory;
 
 import java.io.*;
@@ -10,11 +11,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Logger;
 
 /**
  * Implementation of the getChannel service interface
  */
 public class ConnectionService implements IConnectionService {
+    private final static Logger LOGGER = Logger.getLogger(ConnectionService.class.getName());
     private ArrayList<IChannel> channels = new ArrayList<>();
     private ExecutorService executorService;
     private OnCloseListener onCloseListener;
@@ -121,9 +124,15 @@ public class ConnectionService implements IConnectionService {
         return byteOutputStream.toByteArray();
     }
 
-    public IMessage decode(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream byteInputStream = new ByteArrayInputStream(data);
-        ObjectInputStream objectInputStream = new ObjectInputStream(byteInputStream);
-        return (IMessage) objectInputStream.readObject();
+    public IMessage decode(byte[] data) throws InvalidMessageException {
+        try {
+            ByteArrayInputStream byteInputStream = new ByteArrayInputStream(data);
+            ObjectInputStream objectInputStream = null;
+            objectInputStream = new ObjectInputStream(byteInputStream);
+            return (IMessage) objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            LOGGER.info("could not deserialize message or message of invalid type");
+            throw new InvalidMessageException(e);
+        }
     }
 }

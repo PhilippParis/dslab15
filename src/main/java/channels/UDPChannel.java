@@ -2,6 +2,7 @@ package channels;
 
 import domain.IMessage;
 import domain.messages.UDPMessage;
+import exceptions.InvalidMessageException;
 import service.IConnectionService;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class UDPChannel extends IChannel {
     }
 
     @Override
-    protected IMessage read() throws IOException, ClassNotFoundException {
+    protected IMessage read() throws IOException, InvalidMessageException {
         byte[] buffer = new byte[1024];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         socket.receive(packet);

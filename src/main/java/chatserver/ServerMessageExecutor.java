@@ -24,6 +24,7 @@ public class ServerMessageExecutor extends IMessageExecutor {
     private IChannel channel;
 
     public ServerMessageExecutor(IUserService userService, IConnectionService connectionService, IChannel channel) {
+        super(channel, connectionService);
         this.userService = userService;
         this.connectionService = connectionService;
         this.channel = channel;

@@ -1,66 +1,86 @@
 package executors;
 
+import channels.IChannel;
+import domain.IMessage;
 import domain.messages.*;
 import domain.responses.*;
+import service.IConnectionService;
 
 /**
  * MessageExecutor interface
  */
 public abstract class IMessageExecutor {
+    private IChannel channel;
+    private IConnectionService connectionService;
+
+    public IMessageExecutor(IChannel channel, IConnectionService connectionService) {
+        this.channel = channel;
+        this.connectionService = connectionService;
+    }
 
     public void executeLoginMessage(LoginMessage message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeLogoutMessage(LogoutMessage message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeSendMessage(SendMessage message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeRegisterMessage(RegisterMessage message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeLookupMessage(LookupMessage message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeListMessage(ListMessage message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executePrivateMessage(PrivateMessage message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeLoginResponse(LoginResponse message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeLogoutResponse(LogoutResponse message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeSendResponse(SendResponse message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeRegisterResponse(RegisterResponse message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeLookupResponse(LookupResponse message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeListResponse(ListResponse message) {
-        // ignore message
+        sendErrorResponse(message);
     }
 
     public void executeAckResponse(AckResponse message) {
+        sendErrorResponse(message);
+    }
+
+    public void executeErrorResponse(ErrorResponse message) {
         // ignore message
+    }
+
+    private void sendErrorResponse(IMessage message) {
+        ErrorResponse response = new ErrorResponse("ERROR: message type not expected");
+        response.setId(message.getId());
+        connectionService.send(response, channel);
     }
 }

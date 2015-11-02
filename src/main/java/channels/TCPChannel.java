@@ -1,6 +1,7 @@
 package channels;
 
 import domain.IMessage;
+import exceptions.InvalidMessageException;
 import service.IConnectionService;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class TCPChannel extends IChannel {
     }
 
     @Override
-    protected IMessage read() throws IOException, ClassNotFoundException {
+    protected IMessage read() throws IOException, InvalidMessageException {
         byte[] buffer = new byte[1024];
         socket.getInputStream().read(buffer);
         return connectionService.decode(buffer);
