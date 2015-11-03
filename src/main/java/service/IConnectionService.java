@@ -67,7 +67,7 @@ public interface IConnectionService {
      * @param channel getChannel used for sending
      * @throws TimeoutException if no response is received after 1 sec
      */
-    <T> T sendAndWait(IMessage message, IChannel channel) throws TimeoutException, InvalidMessageException;
+    IMessage sendAndWait(IMessage message, IChannel channel) throws TimeoutException;
 
     /**
      * sends the message to all available channels except the sender getChannel

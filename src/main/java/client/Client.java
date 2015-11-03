@@ -118,12 +118,12 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new LoginMessage(username, password);
 
 		try {
-			LoginResponse response = connectionService.sendAndWait(msg, serverChannel);
+			LoginResponse response = (LoginResponse) connectionService.sendAndWait(msg, serverChannel);
 			clientService.login(username);
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (InvalidMessageException e) {
+		} catch (ClassCastException e) {
 			return "Unexpected response received";
 		}
 	}
@@ -134,12 +134,12 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new LogoutMessage();
 
 		try {
-			LogoutResponse response = connectionService.sendAndWait(msg, serverChannel);
+			LogoutResponse response = (LogoutResponse) connectionService.sendAndWait(msg, serverChannel);
 			clientService.logout();
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (InvalidMessageException e) {
+		} catch (ClassCastException e) {
 			return "Unexpected response received";
 		}
 	}
@@ -150,13 +150,13 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new SendMessage(message);
 
 		try {
-			SendResponse response = connectionService.sendAndWait(msg, serverChannel);
+			SendResponse response = (SendResponse) connectionService.sendAndWait(msg, serverChannel);
 			if (!response.isSuccessful()) {
 				return response.getMessage();
 			}
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (InvalidMessageException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 
@@ -171,10 +171,10 @@ public class Client implements IClientCli, Runnable {
 		ListResponse response;
 
 		try {
-			response = connectionService.sendAndWait(msg, udpChannel);
+			response = (ListResponse) connectionService.sendAndWait(msg, udpChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (InvalidMessageException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 
@@ -194,10 +194,10 @@ public class Client implements IClientCli, Runnable {
 		LookupMessage lookupMessage = new LookupMessage(username);
 		LookupResponse response;
 		try {
-			response = connectionService.sendAndWait(lookupMessage, serverChannel);
+			response = (LookupResponse) connectionService.sendAndWait(lookupMessage, serverChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (InvalidMessageException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 
@@ -212,10 +212,10 @@ public class Client implements IClientCli, Runnable {
 
 		// send private message and wait for acknowledge
 		try {
-			AckResponse ack = connectionService.sendAndWait(privateMessage, privateChannel);
+			AckResponse ack = (AckResponse) connectionService.sendAndWait(privateMessage, privateChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (InvalidMessageException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 
@@ -231,10 +231,10 @@ public class Client implements IClientCli, Runnable {
 		LookupResponse response;
 
 		try {
-			response = connectionService.sendAndWait(msg, serverChannel);
+			response = (LookupResponse) connectionService.sendAndWait(msg, serverChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (InvalidMessageException e) {
+		} catch (ClassCastException e) {
 			return "unexpected response received";
 		}
 
@@ -259,11 +259,11 @@ public class Client implements IClientCli, Runnable {
 		RegisterResponse response;
 
 		try {
-			response = connectionService.sendAndWait(msg, serverChannel);
+			response = (RegisterResponse) connectionService.sendAndWait(msg, serverChannel);
 		} catch (TimeoutException e) {
 			dispatcher.stop();
 			return "timeout occurred: Server not reachable";
-		} catch (InvalidMessageException e) {
+		} catch (ClassCastException e) {
 			dispatcher.stop();
 			return "unexpected response received";
 		}

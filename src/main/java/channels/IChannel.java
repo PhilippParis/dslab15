@@ -52,7 +52,7 @@ public abstract class IChannel implements Runnable {
      * @param message message to send
      * @return response (can be null if timeout occurred)
      */
-    public <T> T sendAndWait(IMessage message) throws TimeoutException, InvalidMessageException {
+    public IMessage sendAndWait(IMessage message) throws TimeoutException {
         // create unique message id
         long id = messageID.incrementAndGet();
 
@@ -71,13 +71,7 @@ public abstract class IChannel implements Runnable {
 
         // remove task and return response
         tasks.remove(id);
-
-        try {
-            return (T) task.getResponse();
-        } catch (ClassCastException e) {
-            LOGGER.log(Level.INFO, "invalid message received", e);
-            throw new InvalidMessageException(e);
-        }
+        return task.getResponse();
     }
 
     /**
