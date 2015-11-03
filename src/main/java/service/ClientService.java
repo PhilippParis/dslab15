@@ -74,7 +74,7 @@ public class ClientService implements IClientService {
             executorService.execute(dispatcher);
             return dispatcher;
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "error creating server socket");
+            LOGGER.log(Level.SEVERE, "error creating server socket", e);
             return null;
         }
     }

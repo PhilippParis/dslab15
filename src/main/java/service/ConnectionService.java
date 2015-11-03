@@ -110,7 +110,7 @@ public class ConnectionService implements IConnectionService {
     }
 
     @Override
-    public IMessage sendAndWait(IMessage message, IChannel channel) throws TimeoutException {
+    public <T> T sendAndWait(IMessage message, IChannel channel) throws TimeoutException, InvalidMessageException {
         if (message != null && channel != null) {
             return channel.sendAndWait(message);
         }
@@ -131,7 +131,7 @@ public class ConnectionService implements IConnectionService {
             objectInputStream = new ObjectInputStream(byteInputStream);
             return (IMessage) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            LOGGER.info("could not deserialize message or message of invalid type");
+            LOGGER.severe("could not deserialize message or message of invalid type");
             throw new InvalidMessageException(e);
         }
     }

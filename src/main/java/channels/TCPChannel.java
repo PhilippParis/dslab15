@@ -28,7 +28,7 @@ public class TCPChannel extends IChannel {
         try {
             socket.getOutputStream().write(connectionService.encode(message));
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "failed to send message: " + e.toString());
+            LOGGER.log(Level.SEVERE, "failed to send message: ", e);
         }
     }
 
@@ -42,9 +42,11 @@ public class TCPChannel extends IChannel {
     @Override
     public void stop() {
         try {
-            socket.close();
+            if (socket != null) {
+                socket.close();
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "failed to close socket", e);
         }
     }
 }

@@ -1,7 +1,7 @@
 package exceptions;
 
 /**
- * Created by phili on 11/2/15.
+ * Exception indicating a invalid or unexpected message
  */
 public class InvalidMessageException extends Exception {
     public InvalidMessageException(Throwable cause) {

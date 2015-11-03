@@ -6,10 +6,13 @@ import domain.messages.*;
 import domain.responses.*;
 import service.IConnectionService;
 
+import java.util.logging.Logger;
+
 /**
  * MessageExecutor interface
  */
 public abstract class IMessageExecutor {
+    private final static Logger LOGGER = Logger.getLogger(IMessageExecutor.class.getName());
     private IChannel channel;
     private IConnectionService connectionService;
 
@@ -79,6 +82,7 @@ public abstract class IMessageExecutor {
     }
 
     private void sendErrorResponse(IMessage message) {
+        LOGGER.severe("message type not expected: " + message);
         ErrorResponse response = new ErrorResponse("ERROR: message type not expected");
         response.setId(message.getId());
         connectionService.send(response, channel);

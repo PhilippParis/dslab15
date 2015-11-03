@@ -4,11 +4,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * SendAndWait - Task
  */
 public class Task {
+    private final static Logger LOGGER = Logger.getLogger(Task.class.getName());
     private IMessage message = null;
     private IMessage response = null;
     private Lock lock = new ReentrantLock();
@@ -51,7 +54,7 @@ public class Task {
                 inTime = condition.await(timeout, TimeUnit.MILLISECONDS);
             }
         } catch (InterruptedException e) {
-
+            LOGGER.log(Level.INFO, "task interrupted", e);
         } finally {
             lock.unlock();
         }

@@ -92,38 +92,36 @@ public class Chatserver implements IChatserverCli, Runnable {
 		// setup shell
 		shell = new Shell(componentName, userRequestStream, userResponseStream);
 		shell.register(this);
-
-		setupTCPServer(config.getInt("tcp.port"));
-		setupUDP(config.getInt("udp.port"));
 	}
 
-	public void setupTCPServer(int port) {
-		try {
-			serverSocket = new ServerSocket(port);
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, "error creating server socket (TCP)");
-			e.printStackTrace();
-		}
-
-		// create dispatcher
+	public void setupTCPServer(int port) throws IOException {
+		serverSocket = new ServerSocket(port);
 		dispatcher = new Dispatcher(connectionService, serverSocket);
 	}
 
-	private void setupUDP(int port) {
-		try {
-			DatagramSocket socket = new DatagramSocket(port);
-			IChannel udpChannel = new UDPChannel(connectionService, socket);
-			connectionService.addChannel(udpChannel);
-		} catch (SocketException e) {
-			LOGGER.log(Level.INFO, "setting up udp socket failed");
-			e.printStackTrace();
-		}
+	private void setupUDP(int port) throws IOException {
+		DatagramSocket socket = new DatagramSocket(port);
+		IChannel udpChannel = new UDPChannel(connectionService, socket);
+		connectionService.addChannel(udpChannel);
 	}
 
 	@Override
 	public void run() {
-		executorService.execute(shell);
-		executorService.execute(dispatcher);
+		try {
+			setupTCPServer(config.getInt("tcp.port"));
+			setupUDP(config.getInt("udp.port"));
+
+			executorService.execute(shell);
+			executorService.execute(dispatcher);
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, "failed to setup tcp and udp sockets", e);
+			try {
+				shell.writeLine("failed to setup tcp and udp sockets: exiting...");
+				exit();
+			} catch (IOException e2) {
+				LOGGER.log(Level.SEVERE, "failed to write to shell", e2);
+			}
+		}
 	}
 
 	@Command
@@ -159,7 +157,7 @@ public class Chatserver implements IChatserverCli, Runnable {
 		try {
 			userRequestStream.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "failed to close userRequestStream", e);
 		}
 
 		// threads / sockets
@@ -181,6 +179,7 @@ public class Chatserver implements IChatserverCli, Runnable {
 				// wait for task to be canceled
 				if(!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
 					System.err.println("ExecutorService did not terminate");
+					LOGGER.log(Level.SEVERE, "ExecutorService did not terminate");
 				}
 			}
 		} catch (InterruptedException e) {

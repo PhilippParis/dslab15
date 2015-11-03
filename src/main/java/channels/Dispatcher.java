@@ -42,9 +42,11 @@ public class Dispatcher implements Runnable {
      */
     public void stop() {
         try {
-            serverSocket.close();
+            if (serverSocket != null) {
+                serverSocket.close();
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.severe("failed to close server socket");
         }
     }
 }

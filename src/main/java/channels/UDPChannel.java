@@ -56,6 +56,8 @@ public class UDPChannel extends IChannel {
 
     @Override
     public void stop() {
-        socket.close();
+        if (socket != null) {
+            socket.close();
+        }
     }
 }

@@ -8,7 +8,8 @@ import java.util.Collection;
 import java.util.MissingResourceException;
 
 /**
- * Created by phili on 10/30/15.
+ * Implementation of the user data access object for the Config class
+ *
  */
 public class ConfigUserDAO implements IUserDAO {
     private Config config;

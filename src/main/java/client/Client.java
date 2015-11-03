@@ -17,6 +17,7 @@ import cli.Shell;
 import domain.*;
 import domain.messages.*;
 import domain.responses.*;
+import exceptions.InvalidMessageException;
 import executors.IMessageExecutorFactory;
 import service.ClientService;
 import service.ConnectionService;
@@ -84,14 +85,18 @@ public class Client implements IClientCli, Runnable {
 		try {
 			setupTCP(config.getString("chatserver.host"), config.getInt("chatserver.tcp.port"));
 			setupUDP(config.getString("chatserver.host"), config.getInt("chatserver.udp.port"));
-		} catch (IOException e) {
-			LOGGER.log(Level.INFO, "Connection buildup failed");
-			userResponseStream.println("Connection buildup failed");
-			return;
-		}
 
-		// start shell thread
-		executorService.execute(shell);
+			// start shell thread
+			executorService.execute(shell);
+		} catch (IOException e) {
+			LOGGER.log(Level.INFO, "Connection buildup failed", e);
+			try {
+				shell.writeLine("Connection buildup failed: exiting...");
+				exit();
+			} catch (IOException e1) {
+				LOGGER.log(Level.SEVERE, "failed to write to shell", e1);
+			}
+		}
 	}
 
 	private void setupTCP(String host, int port) throws IOException {
@@ -113,12 +118,12 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new LoginMessage(username, password);
 
 		try {
-			LoginResponse response = (LoginResponse) connectionService.sendAndWait(msg, serverChannel);
+			LoginResponse response = connectionService.sendAndWait(msg, serverChannel);
 			clientService.login(username);
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (ClassCastException e) {
+		} catch (InvalidMessageException e) {
 			return "Unexpected response received";
 		}
 	}
@@ -129,12 +134,12 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new LogoutMessage();
 
 		try {
-			LogoutResponse response = (LogoutResponse) connectionService.sendAndWait(msg, serverChannel);
+			LogoutResponse response = connectionService.sendAndWait(msg, serverChannel);
 			clientService.logout();
 			return response.getMessage();
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (ClassCastException e) {
+		} catch (InvalidMessageException e) {
 			return "Unexpected response received";
 		}
 	}
@@ -145,13 +150,13 @@ public class Client implements IClientCli, Runnable {
 		IMessage msg = new SendMessage(message);
 
 		try {
-			SendResponse response = (SendResponse) connectionService.sendAndWait(msg, serverChannel);
+			SendResponse response = connectionService.sendAndWait(msg, serverChannel);
 			if (!response.isSuccessful()) {
 				return response.getMessage();
 			}
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (ClassCastException e) {
+		} catch (InvalidMessageException e) {
 			return "unexpected response received";
 		}
 
@@ -166,10 +171,10 @@ public class Client implements IClientCli, Runnable {
 		ListResponse response;
 
 		try {
-			response = (ListResponse) connectionService.sendAndWait(msg, udpChannel);
+			response = connectionService.sendAndWait(msg, udpChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (ClassCastException e) {
+		} catch (InvalidMessageException e) {
 			return "unexpected response received";
 		}
 
@@ -189,10 +194,10 @@ public class Client implements IClientCli, Runnable {
 		LookupMessage lookupMessage = new LookupMessage(username);
 		LookupResponse response;
 		try {
-			response = (LookupResponse) connectionService.sendAndWait(lookupMessage, serverChannel);
+			response = connectionService.sendAndWait(lookupMessage, serverChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (ClassCastException e) {
+		} catch (InvalidMessageException e) {
 			return "unexpected response received";
 		}
 
@@ -207,10 +212,10 @@ public class Client implements IClientCli, Runnable {
 
 		// send private message and wait for acknowledge
 		try {
-			connectionService.sendAndWait(privateMessage, privateChannel);
+			AckResponse ack = connectionService.sendAndWait(privateMessage, privateChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (ClassCastException e) {
+		} catch (InvalidMessageException e) {
 			return "unexpected response received";
 		}
 
@@ -226,10 +231,10 @@ public class Client implements IClientCli, Runnable {
 		LookupResponse response;
 
 		try {
-			response = (LookupResponse) connectionService.sendAndWait(msg, serverChannel);
+			response = connectionService.sendAndWait(msg, serverChannel);
 		} catch (TimeoutException e) {
 			return "timeout occurred: Server not reachable";
-		} catch (ClassCastException e) {
+		} catch (InvalidMessageException e) {
 			return "unexpected response received";
 		}
 
@@ -254,11 +259,11 @@ public class Client implements IClientCli, Runnable {
 		RegisterResponse response;
 
 		try {
-			response = (RegisterResponse) connectionService.sendAndWait(msg, serverChannel);
+			response = connectionService.sendAndWait(msg, serverChannel);
 		} catch (TimeoutException e) {
 			dispatcher.stop();
 			return "timeout occurred: Server not reachable";
-		} catch (ClassCastException e) {
+		} catch (InvalidMessageException e) {
 			dispatcher.stop();
 			return "unexpected response received";
 		}
@@ -318,6 +323,7 @@ public class Client implements IClientCli, Runnable {
 				// wait for task to be canceled
 				if(!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
 					System.err.println("ExecutorService did not terminate");
+					LOGGER.log(Level.SEVERE, "ExecutorService did not terminate");
 				}
             }
 		} catch (InterruptedException e) {
